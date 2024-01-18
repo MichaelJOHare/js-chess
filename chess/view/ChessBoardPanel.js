@@ -3,14 +3,14 @@ import ChessBoard from "../model/board/ChessBoard.js";
 class ChessBoardPanel {
   static GAME_WIDTH = 600;
   static GAME_HEIGHT = 600;
+  static lightSquareColor = "rgb(248 240 198)";
+  static darkSquareColor = "rgb(156 98 69)";
 
   constructor(board) {
     this.board = board;
     this.canvas = document.getElementById("chessboard");
     this.ctx = this.canvas.getContext("2d");
     this.boardContainer = document.getElementById("chessboard-container");
-    this.lightSquareColor = "rgb(248 240 198)";
-    this.darkSquareColor = "rgb(156 98 69)";
     this.squareSize = this.canvas.width / 8;
     this.pieceImages = {};
     this.loadPieceImages();
@@ -33,18 +33,54 @@ class ChessBoardPanel {
   }
 
   drawBoard() {
+    const rowLabels = "87654321";
+    const colLabels = "abcdefgh";
+    const fontSize = this.squareSize / 6;
+    this.ctx.font = `bold ${fontSize}px Roboto`;
+    this.ctx.textBaseline = "top";
+
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         this.ctx.fillStyle =
-          (row + col) % 2 === 0 ? this.lightSquareColor : this.darkSquareColor;
+          (row + col) % 2 === 0
+            ? ChessBoardPanel.lightSquareColor
+            : ChessBoardPanel.darkSquareColor;
         this.ctx.fillRect(
           col * this.squareSize,
           row * this.squareSize,
           this.squareSize,
           this.squareSize
         );
+
+        // Column labels
+        if (row === 7) {
+          this.ctx.fillStyle =
+            col % 2 === 1
+              ? ChessBoardPanel.darkSquareColor
+              : ChessBoardPanel.lightSquareColor;
+          this.ctx.fillText(
+            colLabels[col],
+            col * this.squareSize + fontSize * 0.3,
+            (row + 1) * this.squareSize - fontSize * 1
+          );
+        }
+
+        // Row labels
+        if (col === 7) {
+          this.ctx.fillStyle =
+            row % 2 === 1
+              ? ChessBoardPanel.darkSquareColor
+              : ChessBoardPanel.lightSquareColor;
+          const labelWidth = this.ctx.measureText(rowLabels[row]).width;
+          this.ctx.fillText(
+            rowLabels[row],
+            (col + 1) * this.squareSize - labelWidth - fontSize * 0.3,
+            row * this.squareSize + fontSize * 0.3
+          );
+        }
       }
     }
+
     this.drawPieces();
   }
 
@@ -60,8 +96,8 @@ class ChessBoardPanel {
               image,
               col * this.squareSize,
               row * this.squareSize,
-              this.squareSize,
-              this.squareSize
+              this.squareSize * 0.96,
+              this.squareSize * 0.96
             );
           }
         }

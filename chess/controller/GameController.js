@@ -2,11 +2,12 @@ import ChessBoard from "../model/board/ChessBoard.js";
 import GameState from "../model/game/GameState.js";
 import MoveHistory from "../model/moves/MoveHistory.js";
 import GUIController from "./GUIController.js";
+import MoveHandler from "../model/moves/MoveHandler.js";
 
 class GameController {
-  #guiController;
   //#sfController;
 
+  #guiController;
   #board;
   #gs;
   #mh;
@@ -18,10 +19,10 @@ class GameController {
     this.#board = new ChessBoard();
     this.#gs = new GameState(this.#board);
     this.#pm = this.#board.getPieceManager();
+    this.#mementos = [];
     this.#move = new MoveHistory();
 
     this.#guiController = new GUIController(this.#board, this);
-    /*
     this.#mh = new MoveHandler(
       this.#board,
       this.#move,
@@ -30,16 +31,14 @@ class GameController {
       this.#mementos,
       this.#pm
     );
+    /*
     this.#sfController = new StockfishController(
       this.#board,
       this.#move,
       this.#gs,
       this.#guiController,
       this.#mh
-    );
-    this.#guiController.showGUI(); */
-
-    this.#mementos = [];
+    ); */
 
     //this.initiateGame();
   }
@@ -49,14 +48,14 @@ class GameController {
     if (this.#gs.getCurrentPlayer().isStockfish()) {
       this.makeStockfishMove();
     }
-  }
+  }*/
 
   handleClickToMove(row, col) {
-    if (this.#gs.isBoardLocked()) {
+    /*     if (this.#gs.isBoardLocked()) {
       return;
-    }
+    } */
 
-    if (this.#mh.isFirstClick()) {
+    if (this.#mh.isFirstClick) {
       this.#mh.handleSelectPieceClick(row, col);
     } else {
       this.#mh.handleMovePieceClick(row, col);
@@ -67,6 +66,7 @@ class GameController {
     }
   }
 
+  /*
   handleDragStart(row, col) {
     if (this.#gs.isBoardLocked()) {
       return false;
