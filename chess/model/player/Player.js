@@ -1,5 +1,5 @@
-import PlayerType from "./PlayerType";
-import PlayerColor from "./PlayerColor";
+import PlayerType from "./PlayerType.js";
+import PlayerColor from "./PlayerColor.js";
 
 class Player {
   #color;

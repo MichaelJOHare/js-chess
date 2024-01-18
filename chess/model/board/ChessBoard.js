@@ -1,11 +1,11 @@
-import Square from "./Square";
-import PieceManager from "../player/PieceManager";
-import Pawn from "../pieces/Pawn";
-import Rook from "../pieces/Rook";
-import Bishop from "../pieces/Bishop";
-import Knight from "../pieces/Knight";
-import Queen from "../pieces/Queen";
-import King from "../pieces/King";
+import Square from "./Square.js";
+import PieceManager from "../player/PieceManager.js";
+import Pawn from "../pieces/Pawn.js";
+import Rook from "../pieces/Rook.js";
+import Bishop from "../pieces/Bishop.js";
+import Knight from "../pieces/Knight.js";
+import Queen from "../pieces/Queen.js";
+import King from "../pieces/King.js";
 
 class ChessBoard {
   static ROW_LENGTH = 8;
@@ -46,21 +46,31 @@ class ChessBoard {
 
   initializeBoard(player1, player2) {
     if (player1.isWhite()) {
-      initializeMajorPieces(
+      this.initializeMajorPieces(
         player1,
-        WHITE_MAJOR_PIECE_ROW,
+        ChessBoard.WHITE_MAJOR_PIECE_ROW,
         player2,
-        BLACK_MAJOR_PIECE_ROW
+        ChessBoard.BLACK_MAJOR_PIECE_ROW
       );
-      initializePawnRows(player1, WHITE_PAWN_ROW, player2, BLACK_PAWN_ROW);
+      this.initializePawnRows(
+        player1,
+        ChessBoard.WHITE_PAWN_ROW,
+        player2,
+        ChessBoard.BLACK_PAWN_ROW
+      );
     } else {
-      initializeMajorPieces(
+      this.initializeMajorPieces(
         player1,
-        BLACK_MAJOR_PIECE_ROW,
+        ChessBoard.BLACK_MAJOR_PIECE_ROW,
         player2,
-        WHITE_MAJOR_PIECE_ROW
+        ChessBoard.WHITE_MAJOR_PIECE_ROW
       );
-      initializePawnRows(player1, BLACK_PAWN_ROW, player2, WHITE_PAWN_ROW);
+      this.initializePawnRows(
+        player1,
+        ChessBoard.BLACK_PAWN_ROW,
+        player2,
+        ChessBoard.WHITE_PAWN_ROW
+      );
     }
   }
 
@@ -242,3 +252,5 @@ class ChessBoard {
     return builder;
   }
 }
+
+export default ChessBoard;

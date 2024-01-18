@@ -1,6 +1,6 @@
-import PieceType from "../pieces/PieceType";
-import ChessPiece from "./ChessPiece";
-import KnightMovementStrategy from "./movementstrategy/KnightMovementStrategy";
+import PieceType from "../pieces/PieceType.js";
+import ChessPiece from "./ChessPiece.js";
+import KnightMovementStrategy from "./movementstrategy/KnightMovementStrategy.js";
 
 class Knight extends ChessPiece {
   static WHITE_KNIGHT = "♞";

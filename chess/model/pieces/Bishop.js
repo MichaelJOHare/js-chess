@@ -1,6 +1,6 @@
-import ChessPiece from "./ChessPiece";
-import PieceType from "../pieces/PieceType";
-import BishopMovementStrategy from "./movementstrategy/BishopMovementStrategy";
+import ChessPiece from "./ChessPiece.js";
+import PieceType from "../pieces/PieceType.js";
+import BishopMovementStrategy from "./movementstrategy/BishopMovementStrategy.js";
 
 class Bishop extends ChessPiece {
   static WHITE_BISHOP = "♝";

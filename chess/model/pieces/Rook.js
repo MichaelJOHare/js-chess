@@ -1,23 +1,14 @@
-import ChessPiece from "./ChessPiece";
-import PieceType from "../pieces/PieceType";
-import RookMovementStrategy from "./movementstrategy/RookMovementStrategy";
+import ChessPiece from "./ChessPiece.js";
+import PieceType from "../pieces/PieceType.js";
+import RookMovementStrategy from "./movementstrategy/RookMovementStrategy.js";
+import PieceWithMoveStatus from "./PieceWithMoveStatus.js";
 
-class Rook extends ChessPiece {
+class Rook extends PieceWithMoveStatus(ChessPiece) {
   static WHITE_ROOK = "♜";
   static BLACK_ROOK = "♖";
-  #hasMoved; // Private field for hasMoved
 
   constructor(currentSquare, player) {
     super(currentSquare, player, PieceType.ROOK, new RookMovementStrategy());
-    this.#hasMoved = false;
-  }
-
-  hasMoved() {
-    return this.#hasMoved;
-  }
-
-  setHasMoved(hasMoved) {
-    this.#hasMoved = hasMoved;
   }
 
   getWhiteChessPieceSymbol() {

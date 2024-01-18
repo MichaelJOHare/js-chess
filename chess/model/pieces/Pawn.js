@@ -1,6 +1,6 @@
-import ChessPiece from "./ChessPiece";
-import PieceType from "../pieces/PieceType";
-import PawnMovementStrategy from "./movementstrategy/PawnMovementStrategy";
+import ChessPiece from "./ChessPiece.js";
+import PieceType from "../pieces/PieceType.js";
+import PawnMovementStrategy from "./movementstrategy/PawnMovementStrategy.js";
 
 class Pawn extends ChessPiece {
   static WHITE_PAWN = "♙";

@@ -1,4 +1,7 @@
-class BaseMovementStrategy {
+import Move from "../../moves/Move.js";
+import MovementStrategy from "./MovementStrategy.js";
+
+class BaseMovementStrategy extends MovementStrategy {
   calculateLegalMoves(board, piece, moveHistory) {
     const rawLegalMoves = this.calculateRawLegalMoves(
       board,
@@ -7,16 +10,43 @@ class BaseMovementStrategy {
     );
     const legalMoves = [];
 
-    for (const m of rawLegalMoves) {
-      if (!this.wouldResultInCheck(board, piece, moveHistory, m)) {
-        legalMoves.push(m);
+    for (const move of rawLegalMoves) {
+      if (!this.wouldResultInCheck(board, piece, moveHistory, move)) {
+        legalMoves.push(move);
       }
     }
     return legalMoves;
   }
-  wouldResultInCheck(board, piece, moveHistory, move) {}
+  wouldResultInCheck(board, piece, moveHistory, move) {
+    const copiedBoard = board.copy();
+    const copiedMoveHistory = moveHistory.copy();
+    const copiedPiece = piece.copy();
+    const copiedPlayer = copiedPiece.getPlayer().copy();
+
+    const copiedMove = new Move(
+      copiedPiece,
+      move.getStartSquare(),
+      move.getEndSquare(),
+      copiedBoard.getPieceAt(
+        move.getEndSquare().getRow(),
+        move.getEndSquare().getCol()
+      ),
+      copiedBoard
+    );
+
+    copiedMoveHistory.makeMove(copiedMove);
+    copiedBoard.initializePieceManager();
+
+    return copiedBoard.isKingInCheck(
+      copiedPlayer,
+      copiedMoveHistory,
+      copiedBoard
+    );
+  }
 
   calculateRawLegalMoves(board, piece, moveHistory) {
     throw new Error("calculateRawLegalMoves must be implemented by subclasses");
   }
 }
+
+export default BaseMovementStrategy;

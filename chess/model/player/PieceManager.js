@@ -76,3 +76,5 @@ class PieceManager {
     return opposingPieces;
   }
 }
+
+export default PieceManager;
