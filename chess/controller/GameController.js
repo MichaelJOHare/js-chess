@@ -5,6 +5,8 @@ import MoveHistory from "../model/moves/MoveHistory.js";
 class GameController {
   //#guiController;
   //#sfController;
+
+  // Change back to private fields after finishing testing
   board;
   #gs;
   #mh;
