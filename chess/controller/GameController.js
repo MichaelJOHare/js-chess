@@ -1,27 +1,27 @@
 import ChessBoard from "../model/board/ChessBoard.js";
 import GameState from "../model/game/GameState.js";
 import MoveHistory from "../model/moves/MoveHistory.js";
+import GUIController from "./GUIController.js";
 
 class GameController {
-  //#guiController;
+  #guiController;
   //#sfController;
 
-  // Change back to private fields after finishing testing
-  board;
+  #board;
   #gs;
   #mh;
-  move;
+  #move;
   #mementos;
   #pm;
 
   constructor() {
-    this.board = new ChessBoard();
-    this.#gs = new GameState(this.board);
-    this.#pm = this.board.getPieceManager();
-    this.move = new MoveHistory();
+    this.#board = new ChessBoard();
+    this.#gs = new GameState(this.#board);
+    this.#pm = this.#board.getPieceManager();
+    this.#move = new MoveHistory();
 
-    /*
     this.#guiController = new GUIController(this.#board, this);
+    /*
     this.#mh = new MoveHandler(
       this.#board,
       this.#move,

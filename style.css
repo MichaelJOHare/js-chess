@@ -1,0 +1,17 @@
+#chessboard-container {
+  position: relative;
+}
+
+#chessboard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.square {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  z-index: 2;
+}
