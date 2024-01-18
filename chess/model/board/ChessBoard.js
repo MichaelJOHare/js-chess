@@ -135,12 +135,16 @@ class ChessBoard {
   }
 
   addPiece(piece) {
-    const { row, col } = piece.getCurrentSquare();
+    const currentSquare = piece.getCurrentSquare();
+    const row = currentSquare.getRow();
+    const col = currentSquare.getCol();
     this.board[row][col] = piece;
   }
 
   removePiece(piece) {
-    const { row, col } = piece.getCurrentSquare();
+    const currentSquare = piece.getCurrentSquare();
+    const row = currentSquare.getRow();
+    const col = currentSquare.getCol();
     this.board[row][col] = null;
   }
 

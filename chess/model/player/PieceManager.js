@@ -1,3 +1,5 @@
+import PieceType from "../pieces/PieceType.js";
+
 class PieceManager {
   constructor(board) {
     this.piecesByPlayer = {};

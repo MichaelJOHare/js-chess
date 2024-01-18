@@ -53,12 +53,27 @@ class ChessPiece {
     return this.#isAlive;
   }
 
+  setIsAlive(isAlive) {
+    this.#isAlive = isAlive;
+  }
+
   kill() {
     this.#isAlive = false;
   }
 
   revive() {
     this.#isAlive = true;
+  }
+
+  copy() {
+    const copiedPiece = new ChessPiece(
+      this.#currentSquare,
+      this.#player,
+      this.#type,
+      this.#movementStrategy
+    );
+    copiedPiece.setIsAlive(this.#isAlive);
+    return copiedPiece;
   }
 }
 export default ChessPiece;

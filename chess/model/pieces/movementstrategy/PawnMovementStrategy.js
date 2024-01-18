@@ -3,6 +3,7 @@ import Move from "../../moves/Move.js";
 import Square from "../../board/Square.js";
 import EnPassantMove from "../../moves/EnPassantMove.js";
 import PromotionMove from "../../moves/PromotionMove.js";
+import PieceType from "../PieceType.js";
 
 class PawnMovementStrategy extends BaseMovementStrategy {
   calculateRawLegalMoves(board, piece, moveHistory) {

@@ -1,3 +1,5 @@
+import PieceWithMoveStatus from "../pieces/PieceWithMoveStatus.js";
+
 class Move {
   #piece;
   #startSquare;
@@ -27,7 +29,7 @@ class Move {
     this.#piece.setCurrentSquare(this.#endSquare);
     this.#board.addPiece(this.#piece);
 
-    if (this.#piece instanceof PieceWithMoveStatus) {
+    if (typeof this.#piece.setHasMoved === "function") {
       this.#piece.setHasMoved(true);
     }
   }
