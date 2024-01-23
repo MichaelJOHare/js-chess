@@ -1,5 +1,6 @@
 import Square from "./Square.js";
 import PieceManager from "../player/PieceManager.js";
+import MoveHistory from "../moves/MoveHistory.js";
 import Pawn from "../pieces/Pawn.js";
 import Rook from "../pieces/Rook.js";
 import Bishop from "../pieces/Bishop.js";

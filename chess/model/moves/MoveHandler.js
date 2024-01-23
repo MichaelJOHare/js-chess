@@ -62,7 +62,8 @@ class MoveHandler {
     );
 
     if (!legalMove) {
-      this.tryAgainPrompt(() => this.guiController.moveIsNotLegalLogText());
+      //this.tryAgainPrompt(() => this.guiController.moveIsNotLegalLogText());
+      console.log("illegal move");
       return;
     }
 

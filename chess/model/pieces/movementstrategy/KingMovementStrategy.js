@@ -70,7 +70,7 @@ class KingMovementStrategy extends BaseMovementStrategy {
   addCastlingMoves(board, piece, legalMoves, moveHistory) {
     if (
       piece instanceof King &&
-      !piece.hasMoved() &&
+      !piece.getHasMoved() &&
       !board.isKingInCheck(piece.getPlayer(), moveHistory, board)
     ) {
       this.addKingSideCastlingMove(board, piece, legalMoves);
@@ -87,7 +87,7 @@ class KingMovementStrategy extends BaseMovementStrategy {
 
     if (
       rook instanceof Rook &&
-      !rook.hasMoved() &&
+      !rook.getHasMoved() &&
       board.isEmpty(
         king.getCurrentSquare().getRow(),
         king.getCurrentSquare().getCol() + 1
@@ -136,7 +136,7 @@ class KingMovementStrategy extends BaseMovementStrategy {
 
     if (
       rook instanceof Rook &&
-      !rook.hasMoved() &&
+      !rook.getHasMoved() &&
       board.isEmpty(
         king.getCurrentSquare().getRow(),
         king.getCurrentSquare().getCol() - 1

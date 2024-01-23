@@ -17,11 +17,12 @@ class BaseMovementStrategy extends MovementStrategy {
     }
     return legalMoves;
   }
+
   wouldResultInCheck(board, piece, moveHistory, move) {
     const copiedBoard = board.copy();
     const copiedMoveHistory = moveHistory.copy();
     const copiedPiece = piece.copy();
-    const copiedPlayer = copiedPiece.getPlayer().copy();
+    const copiedPlayer = copiedPiece.getPlayer();
 
     const copiedMove = new Move(
       copiedPiece,

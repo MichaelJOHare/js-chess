@@ -1,11 +1,9 @@
-import PieceWithMoveStatus from "../pieces/PieceWithMoveStatus.js";
-
 class Move {
   #piece;
   #startSquare;
   #endSquare;
   #capturedPiece;
-  #board;
+  board;
   #isPromotion;
   #isCapture;
 
@@ -14,7 +12,7 @@ class Move {
     this.#startSquare = from;
     this.#endSquare = to;
     this.#capturedPiece = capturedPiece;
-    this.#board = board;
+    this.board = board;
     this.#isPromotion = false;
     this.#isCapture = false;
   }
@@ -22,12 +20,12 @@ class Move {
   execute() {
     if (this.#capturedPiece !== null) {
       this.#capturedPiece.kill();
-      this.#board.removePiece(this.#capturedPiece);
+      this.board.removePiece(this.#capturedPiece);
       this.#isCapture = true;
     }
-    this.#board.removePiece(this.#piece);
+    this.board.removePiece(this.#piece);
     this.#piece.setCurrentSquare(this.#endSquare);
-    this.#board.addPiece(this.#piece);
+    this.board.addPiece(this.#piece);
 
     if (typeof this.#piece.setHasMoved === "function") {
       this.#piece.setHasMoved(true);
@@ -35,13 +33,13 @@ class Move {
   }
 
   undo() {
-    this.#board.removePiece(this.#piece);
+    this.board.removePiece(this.#piece);
     this.#piece.setCurrentSquare(this.#startSquare);
-    this.#board.addPiece(this.#piece);
+    this.board.addPiece(this.#piece);
     if (this.#capturedPiece !== null) {
       this.#capturedPiece.revive();
       this.#capturedPiece.setCurrentSquare(this.#endSquare);
-      this.#board.addPiece(this.#capturedPiece);
+      this.board.addPiece(this.#capturedPiece);
     }
   }
 
@@ -86,7 +84,7 @@ class Move {
     const copiedCapturedPiece = this.#capturedPiece
       ? this.#capturedPiece.copy()
       : null;
-    const copiedBoard = this.#board.copy();
+    const copiedBoard = this.board.copy();
 
     const copiedMove = new Move(
       copiedPiece,
