@@ -7,8 +7,24 @@ class GUIController {
     this.gameController = gameController;
   }
 
-  handleSquareClick(event, row, col) {
+  handleSquareClick(row, col) {
     this.gameController.handleClickToMove(row, col);
+  }
+
+  handleDragStart(row, col) {
+    this.gameController.handleDragStart(row, col);
+  }
+
+  handleDragDrop(row, col) {
+    this.gameController.handleDragDrop(row, col);
+  }
+
+  setHighlightedSquares(moves) {
+    this.chessBoardPanel.drawHighlightedSquares(moves);
+  }
+
+  clearHighlightedSquares() {
+    this.chessBoardPanel.clearHighlights();
   }
 
   updateGUI() {

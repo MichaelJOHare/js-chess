@@ -51,9 +51,9 @@ class GameController {
   }*/
 
   handleClickToMove(row, col) {
-    /*     if (this.#gs.isBoardLocked()) {
+    if (this.#gs.isBoardLocked) {
       return;
-    } */
+    }
 
     if (this.#mh.isFirstClick) {
       this.#mh.handleSelectPieceClick(row, col);
@@ -66,9 +66,8 @@ class GameController {
     }
   }
 
-  /*
   handleDragStart(row, col) {
-    if (this.#gs.isBoardLocked()) {
+    if (this.#gs.isBoardLocked) {
       return false;
     }
 
@@ -84,6 +83,7 @@ class GameController {
     return result;
   }
 
+  /*
   handleUndoButtonClick() {
     this.#mh.handleUndoMove();
   }

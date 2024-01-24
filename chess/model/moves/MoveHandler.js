@@ -33,8 +33,7 @@ class MoveHandler {
         this.move
       );
       if (this.moves.length > 0) {
-        console.log(this.moves);
-        //this.guiController.setHighlightedSquares(this.moves);
+        this.guiController.setHighlightedSquares(this.moves);
       } else {
         console.log("no legal move");
         //this.tryAgainPrompt(() => this.guiController.noLegalMoveLogText());
@@ -45,7 +44,7 @@ class MoveHandler {
   }
 
   handleMovePieceClick(row, col) {
-    //this.guiController.clearHighlightedSquares();
+    this.guiController.clearHighlightedSquares();
     let targetSquare = new Square(row, col);
 
     let pieceAtTargetSquare = this.board.getPieceAt(row, col);
@@ -71,7 +70,6 @@ class MoveHandler {
     this.handleCheckAndCheckmate();
   }
 
-  /*
   handleDragStart(row, col) {
     this.selectedPiece = this.board.getPieceAt(row, col);
 
@@ -79,9 +77,9 @@ class MoveHandler {
       this.selectedPiece === null ||
       this.selectedPiece.getPlayer() !== this.gs.getCurrentPlayer()
     ) {
-      this.tryAgainPrompt(() =>
+      /*       this.tryAgainPrompt(() =>
         this.guiController.invalidPieceSelectionLogText()
-      );
+      ); */
       return false;
     }
 
@@ -101,8 +99,29 @@ class MoveHandler {
     return false;
   }
 
-  handleDragDrop(endRow, endCol) {}
-  */
+  handleDragDrop(endRow, endCol) {
+    this.guiController.clearHighlightedSquares();
+
+    const endSquare = new Square(endRow, endCol);
+    const legalMove = this.moves.find((move) =>
+      move.getEndSquare().equals(endSquare)
+    );
+
+    if (legalMove) {
+      this.finalizeMove(legalMove);
+      this.handleCheckAndCheckmate();
+
+      if (legalMove.isPromotion) {
+        const promotionMove = legalMove;
+        const promotedPiece = promotionMove.getPromotedPiece();
+        return { moveType: "PROMOTION", piece: promotedPiece };
+      }
+      return { moveType: "NORMAL" };
+    } else {
+      //this.tryAgainPrompt(this.guiController.moveIsNotLegalLogText);
+      return { moveType: "INVALID" };
+    }
+  }
 
   finalizeMove(legalMove) {
     this.mementos.push(this.gs.createMemento());
@@ -142,10 +161,10 @@ class MoveHandler {
       }
     }
 
-    /*     if (this.move.getHalfMoveClock() === 100) {
+    if (this.move.getHalfMoveClock() === 100) {
       this.gs.setGameOver(true);
       this.guiController.drawLogText();
-    } */
+    }
 
     if (
       !hasLegalMoves &&
@@ -155,13 +174,13 @@ class MoveHandler {
         this.board
       )
     ) {
-      // this.gs.setGameOver(true);
+      this.gs.setGameOver(true);
       // this.guiController.checkmateLogText();
     } else if (
       !hasLegalMoves ||
       (playerPieces.length === 1 && opponentPieces.length === 1)
     ) {
-      // this.gs.setGameOver(true);
+      this.gs.setGameOver(true);
       // this.guiController.stalemateLogText();
     } else if (
       this.board.isKingInCheck(

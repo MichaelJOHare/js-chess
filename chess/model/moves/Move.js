@@ -4,7 +4,7 @@ class Move {
   #endSquare;
   #capturedPiece;
   board;
-  #isPromotion;
+  isPromotion;
   #isCapture;
 
   constructor(piece, from, to, capturedPiece, board) {
@@ -13,7 +13,7 @@ class Move {
     this.#endSquare = to;
     this.#capturedPiece = capturedPiece;
     this.board = board;
-    this.#isPromotion = false;
+    this.isPromotion = false;
     this.#isCapture = false;
   }
 
@@ -67,16 +67,12 @@ class Move {
     return this.#capturedPiece;
   }
 
-  isPromotion() {
-    return this.#isPromotion;
-  }
-
   isCapture() {
     return this.#isCapture;
   }
 
   setPromotion(promotion) {
-    this.#isPromotion = promotion;
+    this.isPromotion = promotion;
   }
 
   copy() {
@@ -94,7 +90,7 @@ class Move {
       copiedBoard
     );
 
-    copiedMove.#isPromotion = this.#isPromotion;
+    copiedMove.isPromotion = this.isPromotion;
     copiedMove.#isCapture = this.#isCapture;
 
     return copiedMove;

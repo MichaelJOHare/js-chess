@@ -86,16 +86,16 @@ class GameState {
     return this.player2;
   }
 
-  isBoardLocked() {
-    return this.isBoardLocked;
-  }
-
   lockBoard() {
     this.isBoardLocked = true;
   }
 
   unlockBoard() {
     this.isBoardLocked = false;
+  }
+
+  isStockfish() {
+    return this.currentPlayer.PlayerType === PlayerType.AI;
   }
 
   getStockfishElo() {
