@@ -1,5 +1,4 @@
 import ChessBoard from "../model/board/ChessBoard.js";
-import Square from "../model/board/Square.js";
 import EnPassantMove from "../model/moves/EnPassantMove.js";
 
 class ChessBoardPanel {
@@ -45,6 +44,7 @@ class ChessBoardPanel {
     this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
     this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
     this.isMouseDown = false;
+    this.isDragging = false;
     this.originalSquare = null;
     this.draggingPiece = null;
     this.startX = 0;
@@ -199,18 +199,30 @@ class ChessBoardPanel {
     }
 
     this.isMouseDown = true;
+    this.isDragging = false;
   }
 
   onMouseMove(event) {
     if (this.draggingPiece && this.isMouseDown) {
-      const x = event.clientX - this.draggingOffsetX;
-      const y = event.clientY - this.draggingOffsetY;
-      this.guiController.handleDragStart(
-        this.draggingPiece.getCurrentSquare().getRow(),
-        this.draggingPiece.getCurrentSquare().getCol()
-      );
+      const currentX = event.clientX;
+      const currentY = event.clientY;
+      const diffX = Math.abs(currentX - this.startX);
+      const diffY = Math.abs(currentY - this.startY);
 
-      if (this.originalSquare) {
+      if (
+        diffX > ChessBoardPanel.DRAG_DELTA ||
+        diffY > ChessBoardPanel.DRAG_DELTA
+      ) {
+        this.isDragging = true;
+      }
+
+      if (this.isDragging) {
+        const x = currentX - this.draggingOffsetX;
+        const y = currentY - this.draggingOffsetY;
+        this.guiController.handleDragStart(
+          this.draggingPiece.getCurrentSquare().getRow(),
+          this.draggingPiece.getCurrentSquare().getCol()
+        );
         this.clearSquareOnOffscreenCanvas(
           this.originalSquare.col * this.squareSize,
           this.originalSquare.row * this.squareSize
@@ -220,36 +232,28 @@ class ChessBoardPanel {
           this.originalSquare.col * this.squareSize,
           this.originalSquare.row * this.squareSize
         );
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.drawImage(this.offscreenCanvas, 0, 0);
+        this.drawPiece(this.draggingPiece, x, y);
       }
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.drawImage(this.offscreenCanvas, 0, 0);
-      this.drawPiece(this.draggingPiece, x, y);
     }
   }
 
   onMouseUp(event) {
-    this.clearHighlights();
     this.isMouseDown = false;
     const { row, col } = this.getSquareFromCoordinates(
       event.clientX,
       event.clientY
     );
 
-    const diffX = Math.abs(event.clientX - this.startX);
-    const diffY = Math.abs(event.clientY - this.startY);
-    if (
-      diffX < ChessBoardPanel.DRAG_DELTA &&
-      diffY < ChessBoardPanel.DRAG_DELTA
-    ) {
-      this.guiController.handleSquareClick(row, col);
-      this.draggingPiece = null;
-      this.originalSquare = null;
-    } else {
+    if (this.isDragging) {
       this.guiController.handleDragDrop(row, col);
-      this.draggingPiece = null;
-      this.originalSquare = null;
       this.drawBoard();
+    } else {
+      this.guiController.handleSquareClick(row, col);
     }
+    this.draggingPiece = null;
+    this.originalSquare = null;
   }
 
   showPromotionSelector(piece, callback) {
@@ -406,13 +410,12 @@ class ChessBoardPanel {
   }
 
   clearSquareOnOffscreenCanvas(x, y) {
-    //this.highlightedSquares.push(new Square(x.row, y.col));
     this.offscreenCtx.clearRect(x, y, this.squareSize, this.squareSize);
     this.offscreenCtx.fillStyle =
       (this.getSquareFromCoordinates(x, y).row +
         this.getSquareFromCoordinates(x, y).col) %
         2 ===
-      0
+      1
         ? ChessBoardPanel.LIGHT_SQUARE_SELECTED_PIECE
         : ChessBoardPanel.DARK_SQUARE_SELECTED_PIECE;
     this.offscreenCtx.fillRect(x, y, this.squareSize, this.squareSize);

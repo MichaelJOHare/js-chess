@@ -79,6 +79,7 @@ class MoveHandler {
       /*       this.tryAgainPrompt(() =>
         this.guiController.invalidPieceSelectionLogText()
       ); */
+      this.guiController.clearHighlightedSquares();
       return;
     }
 
