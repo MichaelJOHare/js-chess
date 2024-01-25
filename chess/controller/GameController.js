@@ -68,19 +68,18 @@ class GameController {
 
   handleDragStart(row, col) {
     if (this.#gs.isBoardLocked) {
-      return false;
+      return;
     }
 
-    return this.#mh.handleDragStart(row, col);
+    this.#mh.handleDragStart(row, col);
   }
 
   handleDragDrop(endRow, endCol) {
-    const result = this.#mh.handleDragDrop(endRow, endCol);
+    this.#mh.handleDragDrop(endRow, endCol);
 
     if (this.#gs.getCurrentPlayer().isStockfish()) {
       this.makeStockfishMove();
     }
-    return result;
   }
 
   /*

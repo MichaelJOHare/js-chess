@@ -55,14 +55,14 @@ class PieceManager {
   }
 
   handlePromotion(move) {
-    if (move.isPromotion()) {
+    if (move.isPromotion) {
       this.removePiece(move.getOriginalPiece());
       this.addPiece(move.getPromotedPiece());
     }
   }
 
   handleUndoPromotion(move) {
-    if (move.isPromotion()) {
+    if (move.isPromotion) {
       this.removePiece(move.getPromotedPiece());
       this.addPiece(move.getOriginalPiece());
     }

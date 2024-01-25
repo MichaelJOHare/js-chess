@@ -1,4 +1,5 @@
 import Move from "./Move.js";
+import PiecePromotion from "../pieces/PiecePromotion.js";
 
 class PromotionMove extends Move {
   constructor(
@@ -38,7 +39,7 @@ class PromotionMove extends Move {
     }
 
     const chosenPromotion = this.getPromotionType();
-    this.promotedPiece = this.originalPiece.promotePiece(
+    this.promotedPiece = PiecePromotion.promotePiece(
       chosenPromotion,
       this.originalPiece.getPlayer(),
       this.endSquare

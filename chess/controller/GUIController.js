@@ -19,6 +19,10 @@ class GUIController {
     this.gameController.handleDragDrop(row, col);
   }
 
+  handlePawnPromotion(piece, callback) {
+    this.chessBoardPanel.showPromotionSelector(piece, callback);
+  }
+
   setHighlightedSquares(moves) {
     this.chessBoardPanel.drawHighlightedSquares(moves);
   }

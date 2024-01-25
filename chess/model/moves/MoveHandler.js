@@ -44,8 +44,7 @@ class MoveHandler {
   }
 
   handleMovePieceClick(row, col) {
-    this.guiController.clearHighlightedSquares();
-    let targetSquare = new Square(row, col);
+    const targetSquare = new Square(row, col);
 
     let pieceAtTargetSquare = this.board.getPieceAt(row, col);
     if (
@@ -80,7 +79,7 @@ class MoveHandler {
       /*       this.tryAgainPrompt(() =>
         this.guiController.invalidPieceSelectionLogText()
       ); */
-      return false;
+      return;
     }
 
     if (this.selectedPiece.getPlayer() === this.gs.getCurrentPlayer()) {
@@ -90,50 +89,44 @@ class MoveHandler {
       );
       if (this.moves.length > 0) {
         this.guiController.setHighlightedSquares(this.moves);
-        return true;
+        return;
       } else {
-        this.tryAgainPrompt(() => this.guiController.noLegalMoveLogText());
-        return false;
+        //this.tryAgainPrompt(() => this.guiController.noLegalMoveLogText());
+        return;
       }
     }
-    return false;
+    return;
   }
 
   handleDragDrop(endRow, endCol) {
-    this.guiController.clearHighlightedSquares();
-
-    const endSquare = new Square(endRow, endCol);
-    const legalMove = this.moves.find((move) =>
-      move.getEndSquare().equals(endSquare)
+    const targetSquare = new Square(endRow, endCol);
+    let legalMove = this.moves.find((m) =>
+      m.getEndSquare().equals(targetSquare)
     );
 
-    if (legalMove) {
-      this.finalizeMove(legalMove);
-      this.handleCheckAndCheckmate();
-
-      if (legalMove.isPromotion) {
-        const promotionMove = legalMove;
-        const promotedPiece = promotionMove.getPromotedPiece();
-        return { moveType: "PROMOTION", piece: promotedPiece };
-      }
-      return { moveType: "NORMAL" };
-    } else {
-      //this.tryAgainPrompt(this.guiController.moveIsNotLegalLogText);
-      return { moveType: "INVALID" };
+    if (!legalMove) {
+      //this.tryAgainPrompt(() => this.guiController.moveIsNotLegalLogText());
+      console.log("illegal move");
+      this.selectedPiece = null;
+      return;
     }
+
+    this.finalizeMove(legalMove);
+    this.handleCheckAndCheckmate();
   }
 
   finalizeMove(legalMove) {
     this.mementos.push(this.gs.createMemento());
 
-    /*     if (legalMove.isPromotion() && !this.gs.getCurrentPlayer().isStockfish()) {
-      legalMove.setPromotionType(
-        this.guiController.handlePawnPromotion(this.selectedPiece)
+    if (legalMove.isPromotion && !this.gs.getCurrentPlayer().isStockfish()) {
+      this.guiController.handlePawnPromotion(
+        this.selectedPiece,
+        this.handlePawnPromotionCallback.bind(this)
       );
-    } */
+    }
 
     this.move.makeMove(legalMove);
-    // this.pm.handlePromotion(this.move.getLastMove());
+    this.pm.handlePromotion(this.move.getLastMove());
     // this.handleCapturedPieces(legalMove, false);
     this.guiController.updateGUI();
     this.isFirstClick = true;
@@ -141,6 +134,11 @@ class MoveHandler {
     this.gs.swapPlayers();
     // this.guiController.currentPlayerLogText(this.gs.getCurrentPlayer());
     // this.guiController.setHighlightedSquaresPreviousMove(legalMove);
+  }
+
+  handlePawnPromotionCallback(pieceType) {
+    const legalMove = this.moves.find((move) => move.isPromotion);
+    legalMove.setPromotionType(pieceType);
   }
 
   handleCheckAndCheckmate() {

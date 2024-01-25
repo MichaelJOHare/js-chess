@@ -13,7 +13,7 @@ class MoveHistory {
 
   makeMove(move) {
     move.execute();
-    if (move.getPiece().getType() === PieceType.PAWN || move.isCapture()) {
+    if (move.getPiece().getType() === PieceType.PAWN || move.isCapture) {
       this.halfMoveClock = 0;
     } else {
       this.halfMoveClock++;
@@ -78,7 +78,7 @@ class MoveHistory {
   resetMoveClocksForUndo(lastMove) {
     if (
       lastMove.getPiece().getType() === PieceType.PAWN ||
-      lastMove.isCapture()
+      lastMove.isCapture
     ) {
       this.halfMoveClock = this.calculateHalfMoveClockFromHistory();
     } else {
@@ -108,7 +108,7 @@ class MoveHistory {
     let counter = 0;
     for (let i = this.history.length - 1; i >= 0; i--) {
       const move = this.history[i];
-      if (move.getPiece().getType() === PieceType.PAWN || move.isCapture()) {
+      if (move.getPiece().getType() === PieceType.PAWN || move.isCapture) {
         break;
       }
       counter++;
