@@ -44,9 +44,14 @@ class MoveHandler {
   }
 
   handleMovePieceClick(row, col) {
-    const targetSquare = new Square(row, col);
+    if (!this.selectedPiece) {
+      this.isFirstClick = true;
+      return;
+    }
 
+    const targetSquare = new Square(row, col);
     let pieceAtTargetSquare = this.board.getPieceAt(row, col);
+
     if (
       pieceAtTargetSquare !== null &&
       pieceAtTargetSquare.getPlayer() === this.gs.getCurrentPlayer()
@@ -79,7 +84,6 @@ class MoveHandler {
       /*       this.tryAgainPrompt(() =>
         this.guiController.invalidPieceSelectionLogText()
       ); */
-      this.guiController.clearHighlightedSquares();
       return;
     }
 
