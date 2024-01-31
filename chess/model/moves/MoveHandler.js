@@ -109,9 +109,13 @@ class MoveHandler {
       m.getEndSquare().equals(targetSquare)
     );
 
-    if (!legalMove) {
+    if (
+      !legalMove ||
+      this.selectedPiece.getPlayer() !== this.gs.getCurrentPlayer()
+    ) {
       //this.tryAgainPrompt(() => this.guiController.moveIsNotLegalLogText());
       console.log("illegal move");
+      this.isFirstClick = true;
       this.selectedPiece = null;
       return;
     }
