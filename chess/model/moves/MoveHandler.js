@@ -67,6 +67,8 @@ class MoveHandler {
     if (!legalMove) {
       //this.tryAgainPrompt(() => this.guiController.moveIsNotLegalLogText());
       console.log("illegal move");
+      this.selectedPiece = null;
+      this.isFirstClick = true;
       return;
     }
 
@@ -148,7 +150,7 @@ class MoveHandler {
     this.isFirstClick = true;
     this.gs.swapPlayers();
     // this.guiController.currentPlayerLogText(this.gs.getCurrentPlayer());
-    // this.guiController.setHighlightedSquaresPreviousMove(legalMove);
+    this.guiController.setHighlightedSquaresPreviousMove(legalMove);
   }
 
   handleCheckAndCheckmate() {
@@ -171,7 +173,7 @@ class MoveHandler {
 
     if (this.move.getHalfMoveClock() === 100) {
       this.gs.setGameOver(true);
-      this.guiController.drawLogText();
+      //this.guiController.drawLogText();
     }
 
     if (

@@ -27,8 +27,9 @@ class GUIController {
     this.chessBoardPanel.drawHighlightedSquares(moves);
   }
 
-  clearHighlightedSquares() {
-    this.chessBoardPanel.clearHighlights();
+  setHighlightedSquaresPreviousMove(move) {
+    this.chessBoardPanel.clearPreviousMoveHighlights();
+    this.chessBoardPanel.drawPreviousMoveHighlightedSquares(move);
   }
 
   updateGUI() {
