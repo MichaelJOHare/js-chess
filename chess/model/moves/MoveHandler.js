@@ -126,24 +126,25 @@ class MoveHandler {
     if (legalMove.isPromotion && !this.gs.getCurrentPlayer().isStockfish()) {
       this.guiController.handlePawnPromotion(
         this.selectedPiece,
-        this.handlePawnPromotionCallback.bind(this)
+        (promotionType) => {
+          legalMove.setPromotionType(promotionType);
+          this.continueFinalizingMove(legalMove);
+        }
       );
+    } else {
+      this.continueFinalizingMove(legalMove);
     }
+  }
 
+  continueFinalizingMove(legalMove) {
     this.move.makeMove(legalMove);
     this.pm.handlePromotion(this.move.getLastMove());
     // this.handleCapturedPieces(legalMove, false);
     this.guiController.updateGUI();
     this.isFirstClick = true;
-
     this.gs.swapPlayers();
     // this.guiController.currentPlayerLogText(this.gs.getCurrentPlayer());
     // this.guiController.setHighlightedSquaresPreviousMove(legalMove);
-  }
-
-  handlePawnPromotionCallback(pieceType) {
-    const legalMove = this.moves.find((move) => move.isPromotion);
-    legalMove.setPromotionType(pieceType);
   }
 
   handleCheckAndCheckmate() {

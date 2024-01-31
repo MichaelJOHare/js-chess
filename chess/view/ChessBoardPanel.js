@@ -43,7 +43,6 @@ class ChessBoardPanel {
     this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
     this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
     this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
-    this.isMouseDown = false;
     this.isDragging = false;
     this.originalSquare = null;
     this.draggingPiece = null;
@@ -198,12 +197,11 @@ class ChessBoardPanel {
       this.originalSquare = { row, col };
     }
 
-    this.isMouseDown = true;
     this.isDragging = false;
   }
 
   onMouseMove(event) {
-    if (this.draggingPiece && this.isMouseDown) {
+    if (this.draggingPiece) {
       const currentX = event.clientX;
       const currentY = event.clientY;
       const diffX = Math.abs(currentX - this.startX);
@@ -240,7 +238,6 @@ class ChessBoardPanel {
   }
 
   onMouseUp(event) {
-    this.isMouseDown = false;
     const { row, col } = this.getSquareFromCoordinates(
       event.clientX,
       event.clientY
@@ -288,7 +285,7 @@ class ChessBoardPanel {
         img.style.display = "block";
         img.addEventListener("click", () => {
           console.log(`Promotion piece selected: ${type}`);
-          callback(type);
+          callback(type.toUpperCase());
           selector.remove();
         });
         selector.appendChild(img);
@@ -415,7 +412,7 @@ class ChessBoardPanel {
       (this.getSquareFromCoordinates(x, y).row +
         this.getSquareFromCoordinates(x, y).col) %
         2 ===
-      1
+      0
         ? ChessBoardPanel.LIGHT_SQUARE_SELECTED_PIECE
         : ChessBoardPanel.DARK_SQUARE_SELECTED_PIECE;
     this.offscreenCtx.fillRect(x, y, this.squareSize, this.squareSize);
