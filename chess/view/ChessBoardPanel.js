@@ -41,20 +41,21 @@ class ChessBoardPanel {
     this.loadPieceImages();
     this.setScreen();
 
-    window.addEventListener("resize", () => this.setScreen());
     if (screen.orientation) {
       screen.orientation.addEventListener("change", () => this.setScreen());
     }
     this.resizeTimeout;
     window.addEventListener("resize", () => {
       clearTimeout(this.resizeTimeout);
-      this.resizeTimeout = setTimeout(() => this.setScreen(), 500);
+      this.resizeTimeout = setTimeout(() => {
+        this.setScreen();
+      }, 50);
     });
-
     this.canvas.addEventListener("mousedown", this.onMouseDown.bind(this));
     this.canvas.addEventListener("mousemove", this.onMouseMove.bind(this));
     this.canvas.addEventListener("mouseup", this.onMouseUp.bind(this));
 
+    this.dragInitiated = false;
     this.isDragging = false;
     this.originalSquare = null;
     this.draggingPiece = null;
@@ -152,20 +153,6 @@ class ChessBoardPanel {
     }
   }
 
-  drawPiece(piece, x, y) {
-    const pieceName = this.getPieceImageName(piece);
-    const image = this.pieceImages[pieceName];
-    if (image) {
-      this.ctx.drawImage(
-        image,
-        x,
-        y,
-        this.squareSize * 0.96,
-        this.squareSize * 0.96
-      );
-    }
-  }
-
   drawGhostPieceOnCanvas(piece, x, y) {
     const pieceName = this.getPieceImageName(piece);
     const image = this.pieceImages[pieceName];
@@ -235,6 +222,7 @@ class ChessBoardPanel {
       this.draggingPiece = piece;
       this.originalSquare = { row, col };
       this.isDragging = false;
+      this.dragInitiated = false;
     }
   }
 
@@ -252,7 +240,7 @@ class ChessBoardPanel {
         this.isDragging = true;
       }
     }
-    if (this.isDragging) {
+    if (!this.dragInitiated && this.isDragging) {
       this.guiController.handleDragStart(
         this.draggingPiece.getCurrentSquare().getRow(),
         this.draggingPiece.getCurrentSquare().getCol()
@@ -266,6 +254,7 @@ class ChessBoardPanel {
         this.originalSquare.col * this.squareSize,
         this.originalSquare.row * this.squareSize
       );
+      this.dragInitiated = true;
     }
   }
 
@@ -286,6 +275,7 @@ class ChessBoardPanel {
     this.draggingPiece = null;
     this.originalSquare = null;
     this.isDragging = false;
+    this.dragInitiated = false;
   }
 
   showPromotionSelector(move, callback) {
