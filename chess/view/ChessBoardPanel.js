@@ -23,6 +23,12 @@ class ChessBoardPanel {
     this.offscreenCanvas.width = this.canvas.width;
     this.offscreenCanvas.height = this.canvas.height;
     this.offscreenCtx = this.offscreenCanvas.getContext("2d");
+    this.draggingDiv = document.createElement("div");
+    this.draggingDiv.style.position = "absolute";
+    this.draggingDiv.style.visibility = "hidden";
+    this.draggingDiv.style.zIndex = "2";
+    this.draggingDiv.style.pointerEvents = "none";
+    this.boardContainer.appendChild(this.draggingDiv);
 
     this.squareSize = this.canvas.width / 8;
     this.activePromotionSelector = null;
@@ -54,8 +60,6 @@ class ChessBoardPanel {
     this.draggingPiece = null;
     this.startX = 0;
     this.startY = 0;
-    this.draggingOffsetX = 0;
-    this.draggingOffsetY = 0;
   }
 
   init(guiController) {
@@ -162,20 +166,20 @@ class ChessBoardPanel {
     }
   }
 
-  drawGhostPieceOnOffscreenCanvas(piece, x, y) {
+  drawGhostPieceOnCanvas(piece, x, y) {
     const pieceName = this.getPieceImageName(piece);
     const image = this.pieceImages[pieceName];
     if (image) {
-      this.offscreenCtx.save();
-      this.offscreenCtx.globalAlpha = 0.5;
-      this.offscreenCtx.drawImage(
+      this.ctx.save();
+      this.ctx.globalAlpha = 0.5;
+      this.ctx.drawImage(
         image,
         x,
         y,
         this.squareSize * 0.96,
         this.squareSize * 0.96
       );
-      this.offscreenCtx.restore();
+      this.ctx.restore();
     }
   }
 
@@ -220,55 +224,54 @@ class ChessBoardPanel {
     if (piece) {
       this.startX = event.clientX;
       this.startY = event.clientY;
-      this.draggingPiece = piece;
-      const piecePosition = this.getPiecePosition(row, col);
-      this.draggingOffsetX = event.clientX - piecePosition.x;
-      this.draggingOffsetY = event.clientY - piecePosition.y;
-      this.originalSquare = { row, col };
-    }
+      const pieceName = this.getPieceImageName(piece);
+      const image = this.pieceImages[pieceName];
 
-    this.isDragging = false;
+      this.draggingDiv.innerHTML = `<img src="${image.src}" width="${this.squareSize}" height="${this.squareSize}">`;
+      this.draggingDiv.style.left = `${event.clientX - this.squareSize / 2}px`;
+      this.draggingDiv.style.top = `${event.clientY - this.squareSize / 2}px`;
+      this.draggingDiv.style.visibility = "visible";
+
+      this.draggingPiece = piece;
+      this.originalSquare = { row, col };
+      this.isDragging = false;
+    }
   }
 
   onMouseMove(event) {
     if (this.draggingPiece) {
-      const currentX = event.clientX;
-      const currentY = event.clientY;
-      const diffX = Math.abs(currentX - this.startX);
-      const diffY = Math.abs(currentY - this.startY);
+      this.draggingDiv.style.left = `${event.clientX - this.squareSize / 2}px`;
+      this.draggingDiv.style.top = `${event.clientY - this.squareSize / 2}px`;
 
+      const diffX = Math.abs(event.clientX - this.startX);
+      const diffY = Math.abs(event.clientY - this.startY);
       if (
         diffX > ChessBoardPanel.DRAG_DELTA ||
         diffY > ChessBoardPanel.DRAG_DELTA
       ) {
         this.isDragging = true;
       }
-
-      if (this.isDragging) {
-        const x = currentX - this.draggingOffsetX;
-        const y = currentY - this.draggingOffsetY;
-        this.guiController.handleDragStart(
-          this.draggingPiece.getCurrentSquare().getRow(),
-          this.draggingPiece.getCurrentSquare().getCol()
-        );
-        this.clearSquareOnOffscreenCanvas(
-          this.originalSquare.col * this.squareSize,
-          this.originalSquare.row * this.squareSize
-        );
-        this.drawGhostPieceOnOffscreenCanvas(
-          this.draggingPiece,
-          this.originalSquare.col * this.squareSize,
-          this.originalSquare.row * this.squareSize
-        );
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.drawImage(this.offscreenCanvas, 0, 0);
-        this.drawPiece(this.draggingPiece, x, y);
-      }
+    }
+    if (this.isDragging) {
+      this.guiController.handleDragStart(
+        this.draggingPiece.getCurrentSquare().getRow(),
+        this.draggingPiece.getCurrentSquare().getCol()
+      );
+      this.clearSquareOnCanvas(
+        this.originalSquare.col,
+        this.originalSquare.row
+      );
+      this.drawGhostPieceOnCanvas(
+        this.draggingPiece,
+        this.originalSquare.col * this.squareSize,
+        this.originalSquare.row * this.squareSize
+      );
     }
   }
 
   onMouseUp(event) {
     this.clearHighlights();
+    this.draggingDiv.style.visibility = "hidden";
 
     const { row, col } = this.getSquareFromCoordinates(
       event.clientX,
@@ -282,6 +285,7 @@ class ChessBoardPanel {
     }
     this.draggingPiece = null;
     this.originalSquare = null;
+    this.isDragging = false;
   }
 
   showPromotionSelector(move, callback) {
@@ -323,7 +327,7 @@ class ChessBoardPanel {
 
     selector.style.width = `${this.squareSize}px`;
     selector.style.height = `${this.squareSize * promotionPieces.length}px`;
-    selector.style.zIndex = 100;
+    selector.style.zIndex = "3";
     selector.style.padding = "0";
     selector.style.margin = "0";
     selector.style.lineHeight = "0";
@@ -338,7 +342,7 @@ class ChessBoardPanel {
     boardOverlay.style.width = "100%";
     boardOverlay.style.height = "100%";
     boardOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    boardOverlay.style.zIndex = "99";
+    boardOverlay.style.zIndex = "2";
     this.boardContainer.appendChild(boardOverlay);
 
     promotionPieces.forEach((type) => {
@@ -599,6 +603,22 @@ class ChessBoardPanel {
     this.previousMove = null;
   }
 
+  clearSquareOnCanvas(row, col) {
+    const x = row * this.squareSize;
+    const y = col * this.squareSize;
+    this.ctx.clearRect(x, y, this.squareSize, this.squareSize);
+    this.ctx.fillStyle =
+      (row + col) % 2 === 0
+        ? ChessBoardPanel.LIGHT_SQUARE_SELECTED_PIECE
+        : ChessBoardPanel.DARK_SQUARE_SELECTED_PIECE;
+    this.ctx.fillRect(
+      row * this.squareSize,
+      col * this.squareSize,
+      this.squareSize,
+      this.squareSize
+    );
+  }
+
   clearSquareOnOffscreenCanvas(row, col) {
     this.offscreenCtx.clearRect(
       col * this.squareSize,
@@ -695,13 +715,6 @@ class ChessBoardPanel {
     const col = Math.floor(relX / this.squareSize);
     const row = Math.floor(relY / this.squareSize);
     return { row, col };
-  }
-
-  getPiecePosition(row, col) {
-    return {
-      x: col * this.squareSize,
-      y: row * this.squareSize,
-    };
   }
 }
 
