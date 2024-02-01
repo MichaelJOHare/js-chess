@@ -25,6 +25,7 @@ class ChessBoardPanel {
     this.offscreenCtx = this.offscreenCanvas.getContext("2d");
 
     this.squareSize = this.canvas.width / 8;
+    this.activePromotionSelector = null;
     this.pieceImages = {};
     this.listOfMovesToHighlight = [];
     this.highlightedSquares = [];
@@ -130,7 +131,7 @@ class ChessBoardPanel {
     for (let row = 0; row < ChessBoard.ROW_LENGTH; row++) {
       for (let col = 0; col < ChessBoard.COLUMN_LENGTH; col++) {
         const piece = this.board.getPieceAt(row, col);
-        if (piece) {
+        if (piece && !this.shouldSkipDrawingPiece(row, col)) {
           const pieceName = this.getPieceImageName(piece);
           const image = this.pieceImages[pieceName];
           if (image) {
@@ -190,6 +191,21 @@ class ChessBoardPanel {
         this.squareSize * 0.96
       );
     }
+  }
+
+  shouldSkipDrawingPiece(row, col) {
+    if (this.activePromotionSelector) {
+      const { startSquare, endSquare, selectorSquares } =
+        this.activePromotionSelector;
+      if (
+        (startSquare.row === row && startSquare.col === col) ||
+        (endSquare.row === row && endSquare.col === col) ||
+        selectorSquares.some((sq) => sq.row === row && sq.col === col)
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   onMouseDown(event) {
@@ -268,24 +284,62 @@ class ChessBoardPanel {
     this.originalSquare = null;
   }
 
-  showPromotionSelector(piece, callback) {
-    const promotionPieces = ["Queen", "Rook", "Bishop", "Knight"];
-    const color = piece.getPlayer().getColor().toLowerCase();
+  showPromotionSelector(move, callback) {
+    let promotionPieces = ["Queen", "Rook", "Bishop", "Knight"];
+    const pawnPosition = move.getEndSquare();
+    const pawnRow = pawnPosition.getRow();
+    const pawnCol = pawnPosition.getCol();
+    const color = move.piece.getPlayer().getColor().toLowerCase();
     const colorCapitalized = color.charAt(0).toUpperCase() + color.slice(1);
     const selector = document.createElement("div");
+    const selectorHeight = this.squareSize * promotionPieces.length;
     selector.className = "promotion-selector";
     selector.style.position = "absolute";
-    selector.style.left = `${this.canvas.offsetLeft}px`;
-    selector.style.top = `${this.canvas.offsetTop}px`;
-    //Make dynamic
+
+    this.activePromotionSelector = {
+      selector: selector,
+      move: move,
+      startSquare: move.getStartSquare(),
+      endSquare: move.getEndSquare(),
+      selectorSquares: this.calculateSelectorSquares(
+        move.getEndSquare(),
+        color
+      ),
+    };
+
+    if (color === "black") {
+      promotionPieces = promotionPieces.reverse();
+    }
+
+    if (pawnRow === 0) {
+      // Might change to 0 since always = 0 but may not if board is flipped when that is implemented
+      selector.style.top = `${pawnRow * this.squareSize}px`;
+    } else if (pawnRow === 7) {
+      selector.style.top = `${
+        (pawnRow + 1) * this.squareSize - selectorHeight
+      }px`;
+    }
+    selector.style.left = `${pawnCol * this.squareSize}px`;
+
     selector.style.width = `${this.squareSize}px`;
     selector.style.height = `${this.squareSize * promotionPieces.length}px`;
     selector.style.zIndex = 100;
-    selector.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
     selector.style.padding = "0";
     selector.style.margin = "0";
     selector.style.lineHeight = "0";
     selector.style.boxSizing = "border-box";
+
+    // Shade the entire chessboard
+    const boardOverlay = document.createElement("div");
+    boardOverlay.className = "board-overlay";
+    boardOverlay.style.position = "absolute";
+    boardOverlay.style.left = "0";
+    boardOverlay.style.top = "0";
+    boardOverlay.style.width = "100%";
+    boardOverlay.style.height = "100%";
+    boardOverlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    boardOverlay.style.zIndex = "99";
+    this.boardContainer.appendChild(boardOverlay);
 
     promotionPieces.forEach((type) => {
       const pieceName = `${colorCapitalized}_${type}`;
@@ -299,15 +353,38 @@ class ChessBoardPanel {
         img.style.margin = "0";
         img.style.display = "block";
         img.addEventListener("click", () => {
-          console.log(`Promotion piece selected: ${type}`);
           callback(type.toUpperCase());
-          selector.remove();
+          boardOverlay.remove();
+          this.removePromotionSelector();
         });
         selector.appendChild(img);
       }
     });
 
     this.boardContainer.appendChild(selector);
+  }
+
+  calculateSelectorSquares(endSquare, color) {
+    const squares = [];
+    const startRow =
+      color === "white" ? endSquare.getRow() : endSquare.getRow() - 3;
+
+    for (let i = 0; i < 4; i++) {
+      const row = startRow + (color === "white" ? i : -i);
+      const col = endSquare.getCol();
+      squares.push({ row, col });
+    }
+
+    return squares;
+  }
+
+  removePromotionSelector() {
+    if (this.activePromotionSelector) {
+      this.activePromotionSelector.selector.remove();
+      this.activePromotionSelector = null;
+
+      this.drawBoard();
+    }
   }
 
   getPieceImageName(piece) {
@@ -555,12 +632,36 @@ class ChessBoardPanel {
 
   setScreen() {
     const scaleRatio = this.getScaleRatio();
+
     this.canvas.width = ChessBoardPanel.GAME_WIDTH * scaleRatio;
     this.canvas.height = ChessBoardPanel.GAME_HEIGHT * scaleRatio;
+
+    this.boardContainer.style.width = `${
+      ChessBoardPanel.GAME_WIDTH * scaleRatio
+    }px`;
+    this.boardContainer.style.height = `${
+      ChessBoardPanel.GAME_HEIGHT * scaleRatio
+    }px`;
+
     this.squareSize = this.canvas.width / 8;
 
     this.offscreenCanvas.width = this.canvas.width;
     this.offscreenCanvas.height = this.canvas.height;
+
+    if (this.activePromotionSelector) {
+      const { selector, move } = this.activePromotionSelector;
+      const pawnPosition = move.getEndSquare();
+      const pawnRow = pawnPosition.getRow();
+      const pawnCol = pawnPosition.getCol();
+
+      selector.style.top = `${pawnRow * this.squareSize}px`;
+      selector.style.left = `${pawnCol * this.squareSize}px`;
+      selector.style.width = `${this.squareSize}px`;
+      selector.style.height = `${this.squareSize * 4}px`;
+      Array.from(selector.children).forEach((img) => {
+        img.style.height = `${this.squareSize}px`;
+      });
+    }
 
     this.drawBoard();
     this.ctx.drawImage(this.offscreenCanvas, 0, 0);

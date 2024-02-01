@@ -130,13 +130,10 @@ class MoveHandler {
     this.mementos.push(this.gs.createMemento());
 
     if (legalMove.isPromotion && !this.gs.getCurrentPlayer().isStockfish()) {
-      this.guiController.handlePawnPromotion(
-        this.selectedPiece,
-        (promotionType) => {
-          legalMove.setPromotionType(promotionType);
-          this.continueFinalizingMove(legalMove);
-        }
-      );
+      this.guiController.handlePawnPromotion(legalMove, (promotionType) => {
+        legalMove.setPromotionType(promotionType);
+        this.continueFinalizingMove(legalMove);
+      });
     } else {
       this.continueFinalizingMove(legalMove);
     }
