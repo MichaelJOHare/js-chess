@@ -41,6 +41,7 @@ class MoveHistory {
       this.resetHasMovedFlagForRedo(redoMove);
       redoMove.execute();
       this.history.push(redoMove);
+      return redoMove;
     }
   }
 

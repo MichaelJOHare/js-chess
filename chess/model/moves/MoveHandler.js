@@ -216,6 +216,7 @@ class MoveHandler {
     for (let i = 0; i < undoCount; i++) {
       if (this.mementos.length < 1) {
         //this.guiController.nothingLeftToUndoLogText();
+        return;
       }
       this.handleSingleUndo();
     }
@@ -255,6 +256,19 @@ class MoveHandler {
       );
     } */
   }
+
+  handleRedoMove() {
+    if (this.move.undone.length < 1) {
+      //this.guiController.nothingLeftToRedoLogText();
+      return;
+    }
+    const redoMove = this.move.redoMove();
+    this.isFirstClick = true;
+    this.gs.swapPlayers();
+    this.mementos.push(this.gs.createMemento());
+    return redoMove;
+  }
+
   /*
   handleCapturedPieces(legalMove, isUndo) {}
 

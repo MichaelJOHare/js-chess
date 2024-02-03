@@ -24,7 +24,7 @@ class GUIController {
   }
 
   handleNextMoveButtonClick() {
-    this.gameController.handleNextMoveButtonClick();
+    return this.gameController.handleNextMoveButtonClick();
   }
 
   handlePawnPromotion(move, callback) {

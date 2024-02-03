@@ -234,8 +234,8 @@ class ChessBoardPanel {
   }
 
   onNextMoveButtonClick() {
-    const movesToHighlight = this.guiController.handleNextMoveButtonClick();
-    this.drawHighlightedSquares(movesToHighlight);
+    const moveToHighlight = this.guiController.handleNextMoveButtonClick();
+    this.drawPreviousMoveHighlightedSquares(moveToHighlight);
     this.drawBoard();
   }
 

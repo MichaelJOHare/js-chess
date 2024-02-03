@@ -51,7 +51,7 @@ class ChessBoardHighlighter {
     }
   }
 
-  drawHighlightedSquares(moves, squareSize) {
+  drawHighlightedSquares(moves) {
     this.listOfMovesToHighlight = moves;
     this.highlightedSquares = [];
 

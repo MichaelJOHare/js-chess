@@ -89,7 +89,7 @@ class GameController {
   }
 
   handleNextMoveButtonClick() {
-    this.#mh.handleRedoMove();
+    return this.#mh.handleRedoMove();
   }
   /*
     askStockFish() {
