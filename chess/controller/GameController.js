@@ -84,11 +84,14 @@ class GameController {
     this.#guiController.updateGUI();
   }
 
-  /*
-  handleUndoButtonClick() {
+  handlePreviousMoveButtonClick() {
     this.#mh.handleUndoMove();
   }
-    
+
+  handleNextMoveButtonClick() {
+    this.#mh.handleRedoMove();
+  }
+  /*
     askStockFish() {
     this.#sfController.getBestMove();
   }

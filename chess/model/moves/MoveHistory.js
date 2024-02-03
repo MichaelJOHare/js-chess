@@ -92,14 +92,14 @@ class MoveHistory {
 
   resetHasMovedFlagForUndo(move) {
     const piece = move.getPiece();
-    if (piece instanceof PieceWithMoveStatus) {
+    if (typeof piece.setHasMoved === "function") {
       piece.setHasMoved(false);
     }
   }
 
   resetHasMovedFlagForRedo(move) {
     const piece = move.getPiece();
-    if (piece instanceof PieceWithMoveStatus) {
+    if (typeof piece.setHasMoved === "function") {
       piece.setHasMoved(true);
     }
   }

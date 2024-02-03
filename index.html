@@ -7,8 +7,18 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <div id="chessboard-container">
-      <canvas id="chessboard"></canvas>
+    <div id="game-container">
+      <div id="chessboard-container">
+        <canvas id="chessboard"></canvas>
+      </div>
+      <div id="sidebar">
+        <div id="navigation">
+          <button id="prev-move">←</button>
+          <button id="next-move">→</button>
+        </div>
+        <textarea id="pgn-box" placeholder="PGN"></textarea>
+        <textarea id="fen-box" placeholder="FEN"></textarea>
+      </div>
     </div>
     <script type="module" src="/chess/main.js"></script>
   </body>

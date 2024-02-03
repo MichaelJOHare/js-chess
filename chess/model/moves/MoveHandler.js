@@ -206,11 +206,56 @@ class MoveHandler {
     }
   }
 
+  handleUndoMove() {
+    const undoCount =
+      this.gs.getCurrentPlayer() === this.gs.getPlayer1() &&
+      this.gs.getPlayer2().isStockfish()
+        ? 2
+        : 1;
+
+    for (let i = 0; i < undoCount; i++) {
+      if (this.mementos.length < 1) {
+        //this.guiController.nothingLeftToUndoLogText();
+      }
+      this.handleSingleUndo();
+    }
+  }
+
+  handleSingleUndo() {
+    if (this.gs.isGameOver) {
+      this.gs.setGameOver(false);
+    }
+
+    //handleCapturedPieces(this.move.getLastMove(), true);
+    this.pm.handleUndoPromotion(this.move.getLastMove());
+
+    this.move.undoMove();
+    const memento = this.mementos.pop();
+    this.gs.restoreFromMemento(memento);
+
+    this.guiController.setHighlightedSquaresPreviousMove(
+      this.move.getLastMove()
+    );
+    //this.guiController.currentPlayerLogText(this.gs.getCurrentPlayer());
+    this.isFirstClick = true;
+
+    /*     if (
+      this.board.isKingInCheck(
+        this.gs.getCurrentPlayer(),
+        this.move,
+        this.board
+      )
+    ) {
+      this.guiController.checkLogText(
+        this.pm.findKingSquare(this.gs.getCurrentPlayer())
+      );
+    } else {
+      this.guiController.clearKingCheckHighlightedSquare(
+        this.pm.findKingSquare(this.gs.getCurrentPlayer())
+      );
+    } */
+  }
   /*
-  handleUndoMove() {}
-
-  handleSingleUndo() {}
-
   handleCapturedPieces(legalMove, isUndo) {}
 
   tryAgainPrompt(logTextMethod) {

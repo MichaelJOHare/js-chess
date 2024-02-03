@@ -19,6 +19,14 @@ class GUIController {
     this.gameController.handleDragDrop(row, col);
   }
 
+  handlePreviousMoveButtonClick() {
+    this.gameController.handlePreviousMoveButtonClick();
+  }
+
+  handleNextMoveButtonClick() {
+    this.gameController.handleNextMoveButtonClick();
+  }
+
   handlePawnPromotion(move, callback) {
     this.chessBoardPanel.showPromotionSelector(move, callback);
   }

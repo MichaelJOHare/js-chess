@@ -193,7 +193,10 @@ class ChessBoardPanel {
   setScreen() {
     const scaleRatio = this.getScaleRatio();
 
-    this.canvas.width = ChessBoardPanel.GAME_WIDTH * scaleRatio;
+    this.canvas.width = Math.min(
+      ChessBoardPanel.GAME_WIDTH * scaleRatio,
+      this.boardContainer.offsetWidth
+    );
     this.canvas.height = ChessBoardPanel.GAME_HEIGHT * scaleRatio;
 
     this.boardContainer.style.width = `${
@@ -224,6 +227,18 @@ class ChessBoardPanel {
     }
   }
 
+  onPreviousMoveButtonClick() {
+    this.guiController.handlePreviousMoveButtonClick();
+    this.clearHighlights();
+    this.drawBoard();
+  }
+
+  onNextMoveButtonClick() {
+    const movesToHighlight = this.guiController.handleNextMoveButtonClick();
+    this.drawHighlightedSquares(movesToHighlight);
+    this.drawBoard();
+  }
+
   setupEventListeners() {
     this.canvas.addEventListener(
       "mousedown",
@@ -237,6 +252,15 @@ class ChessBoardPanel {
       "mouseup",
       this.eventHandlers.onMouseUp.bind(this.eventHandlers)
     );
+
+    const previousMoveButton = document.getElementById("prev-move");
+    const nextMoveButton = document.getElementById("next-move");
+    previousMoveButton.addEventListener("click", () => {
+      this.onPreviousMoveButtonClick();
+    });
+    nextMoveButton.addEventListener("click", () => {
+      this.onNextMoveButtonClick();
+    });
 
     if (screen.orientation) {
       screen.orientation.addEventListener("change", () => {
