@@ -10,6 +10,7 @@ class ChessBoardHighlighter {
     this.imageLoader = imageLoader;
 
     this.squareSize = 0;
+    this.kingCheckHighlightedSquare = null;
     this.listOfMovesToHighlight = [];
     this.highlightedSquares = [];
     this.previousMove = null;
@@ -210,6 +211,52 @@ class ChessBoardHighlighter {
         row * this.squareSize
       );
     }
+  }
+
+  drawKingCheckHighlight(row, col) {
+    this.clearSquareOnOffscreenCanvas(row, col);
+
+    const centerX = (col + 0.5) * this.squareSize;
+    const centerY = (row + 0.5) * this.squareSize;
+    const innerRadius = 0;
+    const outerRadius = this.squareSize * 0.9;
+
+    const gradient = this.offscreenCtx.createRadialGradient(
+      centerX,
+      centerY,
+      innerRadius,
+      centerX,
+      centerY,
+      outerRadius
+    );
+
+    gradient.addColorStop(0, "rgb(255, 0, 0)");
+    gradient.addColorStop(0.25, "rgb(231, 0, 0)");
+    gradient.addColorStop(0.89, "rgba(169, 0, 0, 0)");
+    gradient.addColorStop(1, "rgba(158, 0, 0, 0)");
+
+    this.offscreenCtx.fillStyle = gradient;
+
+    this.offscreenCtx.fillRect(
+      col * this.squareSize,
+      row * this.squareSize,
+      this.squareSize,
+      this.squareSize
+    );
+
+    const piece = this.board.getPieceAt(row, col);
+    if (piece) {
+      this.drawPieceOnOffscreenCanvas(
+        piece,
+        col * this.squareSize,
+        row * this.squareSize
+      );
+    }
+    if (row === 7 || col === 7) {
+      this.drawRankFileLabels(row, col);
+    }
+    this.ctx.drawImage(this.offscreenCanvas, 0, 0);
+    this.kingCheckHighlightedSquare = { row, col };
   }
 
   clearHighlights() {

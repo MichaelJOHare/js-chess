@@ -1,13 +1,20 @@
 import Square from "../board/Square.js";
 
 class MoveHandler {
-  constructor(board, move, gs, guiController, mementos, pm) {
-    this.mementos = mementos;
+  constructor(
+    board,
+    moveHistory,
+    gameState,
+    guiController,
+    mementos,
+    pieceManager
+  ) {
     this.board = board;
-    this.move = move;
-    this.gs = gs;
-    this.guiController = guiController;
-    this.pm = pm;
+    this.move = moveHistory;
+    this.gs = gameState;
+    this.gui = guiController;
+    this.mementos = mementos;
+    this.pm = pieceManager;
     this.isFirstClick = true;
     this.selectedPiece = null;
     this.moves = [];
@@ -22,7 +29,7 @@ class MoveHandler {
     ) {
       console.log("invalid piece");
       /*       this.tryAgainPrompt(() =>
-        this.guiController.invalidPieceSelectionLogText()
+        this.gui.invalidPieceSelectionLogText()
       ); */
       return;
     }
@@ -33,10 +40,10 @@ class MoveHandler {
         this.move
       );
       if (this.moves.length > 0) {
-        this.guiController.setHighlightedSquares(this.moves);
+        this.gui.setHighlightedSquares(this.moves);
       } else {
         console.log("no legal move");
-        //this.tryAgainPrompt(() => this.guiController.noLegalMoveLogText());
+        //this.tryAgainPrompt(() => this.gui.noLegalMoveLogText());
         return;
       }
       this.isFirstClick = false;
@@ -65,7 +72,7 @@ class MoveHandler {
     );
 
     if (!legalMove) {
-      //this.tryAgainPrompt(() => this.guiController.moveIsNotLegalLogText());
+      //this.tryAgainPrompt(() => this.gui.moveIsNotLegalLogText());
       console.log("illegal move");
       this.selectedPiece = null;
       this.isFirstClick = true;
@@ -84,7 +91,7 @@ class MoveHandler {
       this.selectedPiece.getPlayer() !== this.gs.getCurrentPlayer()
     ) {
       /*       this.tryAgainPrompt(() =>
-        this.guiController.invalidPieceSelectionLogText()
+        this.gui.invalidPieceSelectionLogText()
       ); */
       return;
     }
@@ -95,10 +102,10 @@ class MoveHandler {
         this.move
       );
       if (this.moves.length > 0) {
-        this.guiController.setHighlightedSquares(this.moves);
+        this.gui.setHighlightedSquares(this.moves);
         return;
       } else {
-        //this.tryAgainPrompt(() => this.guiController.noLegalMoveLogText());
+        //this.tryAgainPrompt(() => this.gui.noLegalMoveLogText());
         return;
       }
     }
@@ -115,7 +122,7 @@ class MoveHandler {
       !legalMove ||
       this.selectedPiece.getPlayer() !== this.gs.getCurrentPlayer()
     ) {
-      //this.tryAgainPrompt(() => this.guiController.moveIsNotLegalLogText());
+      //this.tryAgainPrompt(() => this.gui.moveIsNotLegalLogText());
       console.log("illegal move");
       this.isFirstClick = true;
       this.selectedPiece = null;
@@ -130,7 +137,7 @@ class MoveHandler {
     this.mementos.push(this.gs.createMemento());
 
     if (legalMove.isPromotion && !this.gs.getCurrentPlayer().isStockfish()) {
-      this.guiController.handlePawnPromotion(legalMove, (promotionType) => {
+      this.gui.handlePawnPromotion(legalMove, (promotionType) => {
         legalMove.setPromotionType(promotionType);
         this.continueFinalizingMove(legalMove);
       });
@@ -143,11 +150,11 @@ class MoveHandler {
     this.move.makeMove(legalMove);
     this.pm.handlePromotion(this.move.getLastMove());
     // this.handleCapturedPieces(legalMove, false);
-    this.guiController.updateGUI();
+    this.gui.updateGUI();
     this.isFirstClick = true;
     this.gs.swapPlayers();
-    // this.guiController.currentPlayerLogText(this.gs.getCurrentPlayer());
-    this.guiController.setHighlightedSquaresPreviousMove(legalMove);
+    // this.gui.currentPlayerLogText(this.gs.getCurrentPlayer());
+    this.gui.setHighlightedSquaresPreviousMove(legalMove);
   }
 
   handleCheckAndCheckmate() {
@@ -170,7 +177,7 @@ class MoveHandler {
 
     if (this.move.getHalfMoveClock() === 100) {
       this.gs.setGameOver(true);
-      //this.guiController.drawLogText();
+      //this.gui.drawLogText();
     }
 
     if (
@@ -182,13 +189,13 @@ class MoveHandler {
       )
     ) {
       this.gs.setGameOver(true);
-      // this.guiController.checkmateLogText();
+      // this.gui.checkmateLogText();
     } else if (
       !hasLegalMoves ||
       (playerPieces.length === 1 && opponentPieces.length === 1)
     ) {
       this.gs.setGameOver(true);
-      // this.guiController.stalemateLogText();
+      // this.gui.stalemateLogText();
     } else if (
       this.board.isKingInCheck(
         this.gs.getCurrentPlayer(),
@@ -196,13 +203,13 @@ class MoveHandler {
         this.board
       )
     ) {
-      /*       this.guiController.checkLogText(
+      this.gui.setKingCheckHighlightedSquare(
         this.pm.findKingSquare(this.gs.getCurrentPlayer())
-      ); */
+      );
     } else {
-      /*       this.guiController.clearKingCheckHighlightedSquare(
+      this.gui.clearKingCheckHighlightedSquare(
         this.pm.findKingSquare(this.gs.getOpposingPlayer())
-      ); */
+      );
     }
   }
 
@@ -215,7 +222,7 @@ class MoveHandler {
 
     for (let i = 0; i < undoCount; i++) {
       if (this.mementos.length < 1) {
-        //this.guiController.nothingLeftToUndoLogText();
+        //this.gui.nothingLeftToUndoLogText();
         return;
       }
       this.handleSingleUndo();
@@ -234,38 +241,38 @@ class MoveHandler {
     const memento = this.mementos.pop();
     this.gs.restoreFromMemento(memento);
 
-    this.guiController.setHighlightedSquaresPreviousMove(
-      this.move.getLastMove()
-    );
-    //this.guiController.currentPlayerLogText(this.gs.getCurrentPlayer());
+    this.gui.setHighlightedSquaresPreviousMove(this.move.getLastMove());
+    //this.gui.currentPlayerLogText(this.gs.getCurrentPlayer());
     this.isFirstClick = true;
 
-    /*     if (
+    if (
       this.board.isKingInCheck(
         this.gs.getCurrentPlayer(),
         this.move,
         this.board
       )
     ) {
-      this.guiController.checkLogText(
+      this.gui.setKingCheckHighlightedSquare(
         this.pm.findKingSquare(this.gs.getCurrentPlayer())
       );
     } else {
-      this.guiController.clearKingCheckHighlightedSquare(
+      this.gui.clearKingCheckHighlightedSquare(
         this.pm.findKingSquare(this.gs.getCurrentPlayer())
       );
-    } */
+    }
   }
 
   handleRedoMove() {
     if (this.move.undone.length < 1) {
-      //this.guiController.nothingLeftToRedoLogText();
+      //this.gui.nothingLeftToRedoLogText();
       return;
     }
+
     const redoMove = this.move.redoMove();
+    this.mementos.push(this.gs.createMemento());
     this.isFirstClick = true;
     this.gs.swapPlayers();
-    this.mementos.push(this.gs.createMemento());
+    this.handleCheckAndCheckmate();
     return redoMove;
   }
 

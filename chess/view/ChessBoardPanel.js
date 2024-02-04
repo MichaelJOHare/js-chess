@@ -97,6 +97,12 @@ class ChessBoardPanel {
         this.boardHighlighter.listOfMovesToHighlight
       );
     }
+    if (this.boardHighlighter.kingCheckHighlightedSquare) {
+      this.boardHighlighter.drawKingCheckHighlight(
+        this.boardHighlighter.kingCheckHighlightedSquare.row,
+        this.boardHighlighter.kingCheckHighlightedSquare.col
+      );
+    }
   }
 
   drawPieces() {
@@ -159,11 +165,20 @@ class ChessBoardPanel {
   }
 
   drawHighlightedSquares(moves) {
-    this.boardHighlighter.drawHighlightedSquares(moves);
+    this.boardHighlighter.listOfMovesToHighlight = moves;
+    this.drawBoard();
   }
 
   drawPreviousMoveHighlightedSquares(move) {
-    this.boardHighlighter.drawPreviousMoveHighlightedSquares(move);
+    this.boardHighlighter.previousMove = move;
+    this.drawBoard();
+  }
+
+  drawKingCheckHighlightedSquare(square) {
+    const row = square.getRow();
+    const col = square.getCol();
+    this.boardHighlighter.kingCheckHighlightedSquare = { row, col };
+    this.drawBoard();
   }
 
   clearHighlights() {
@@ -172,6 +187,11 @@ class ChessBoardPanel {
 
   clearPreviousMoveHighlights() {
     this.boardHighlighter.clearPreviousMoveHighlights();
+  }
+
+  clearKingCheckHighlightedSquare(square) {
+    this.boardHighlighter.redrawSquare(square.getRow(), square.getCol());
+    this.boardHighlighter.kingCheckHighlightedSquare = null;
   }
 
   clearSquareOnCanvas(row, col) {

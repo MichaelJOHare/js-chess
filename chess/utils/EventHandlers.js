@@ -29,6 +29,7 @@ class EventHandlers {
     this.startY = 0;
 
     this.draggingDiv = document.createElement("div");
+    this.draggingDiv.className = "draggingDiv";
     this.draggingDiv.style.position = "absolute";
     this.draggingDiv.style.visibility = "hidden";
     this.draggingDiv.style.zIndex = "2";

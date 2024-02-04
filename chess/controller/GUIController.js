@@ -40,6 +40,14 @@ class GUIController {
     this.chessBoardPanel.drawPreviousMoveHighlightedSquares(move);
   }
 
+  setKingCheckHighlightedSquare(square) {
+    this.chessBoardPanel.drawKingCheckHighlightedSquare(square);
+  }
+
+  clearKingCheckHighlightedSquare(square) {
+    this.chessBoardPanel.clearKingCheckHighlightedSquare(square);
+  }
+
   updateGUI() {
     this.chessBoardPanel.drawBoard();
   }
