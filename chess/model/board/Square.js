@@ -17,6 +17,12 @@ class Square {
     return this.#col;
   }
 
+  getSquareFromNotation(notationSquare) {
+    const col = this.#legendLetter.indexOf(notationSquare.substring(0, 1));
+    const row = this.#legendNumber.indexOf(notationSquare.substring(1, 2));
+    return { row, col };
+  }
+
   equals(o) {
     if (o instanceof Square) {
       const square = o;

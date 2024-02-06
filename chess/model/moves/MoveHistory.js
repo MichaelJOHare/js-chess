@@ -120,13 +120,17 @@ class MoveHistory {
   copy() {
     const copiedHistory = new MoveHistory();
 
-    this.history.forEach((move) => {
-      copiedHistory.history.push(move.copy());
-    });
+    if (this.history.length > 0) {
+      this.history.forEach((move) => {
+        copiedHistory.history.push(move.copy());
+      });
+    }
 
-    this.undone.forEach((move) => {
-      copiedHistory.undone.push(move.copy());
-    });
+    if (this.undone.length > 0) {
+      this.undone.forEach((move) => {
+        copiedHistory.undone.push(move.copy());
+      });
+    }
 
     copiedHistory.halfMoveClock = this.halfMoveClock;
     copiedHistory.fullMoveNumber = this.fullMoveNumber;

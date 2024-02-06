@@ -49,6 +49,10 @@ class ChessPiece {
     return this.#type;
   }
 
+  setType(type) {
+    this.#type = type;
+  }
+
   isAlive() {
     return this.#isAlive;
   }

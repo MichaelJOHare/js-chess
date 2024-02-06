@@ -1,4 +1,6 @@
 import ChessBoard from "../model/board/ChessBoard.js";
+import PieceType from "../model/pieces/PieceType.js";
+import PlayerColor from "../model/player/PlayerColor.js";
 
 export default class FENGenerator {
   static toFEN(board, move, gameState) {
@@ -40,10 +42,10 @@ export default class FENGenerator {
       " ";
 
     // 5. Halfmove clock
-    fen += " " + halfMoveClock + " ";
+    fen += " " + move.halfMoveClock + " ";
 
     // 6. Fullmove number
-    fen += " " + fullMoveNumber;
+    fen += " " + move.fullMoveNumber;
 
     return fen;
   }
@@ -54,19 +56,22 @@ function pieceToFEN(piece) {
     throw new Error("Invalid piece");
   }
 
-  switch (piece.type) {
-    case "KING":
-      return piece.player.color === "WHITE" ? "K" : "k";
-    case "QUEEN":
-      return piece.player.color === "WHITE" ? "Q" : "q";
-    case "ROOK":
-      return piece.player.color === "WHITE" ? "R" : "r";
-    case "BISHOP":
-      return piece.player.color === "WHITE" ? "B" : "b";
-    case "KNIGHT":
-      return piece.player.color === "WHITE" ? "N" : "n";
-    case "PAWN":
-      return piece.player.color === "WHITE" ? "P" : "p";
+  const pieceType = piece.getType();
+  const playerColor = piece.getPlayer().getColor();
+
+  switch (pieceType) {
+    case PieceType.KING:
+      return playerColor === PlayerColor.WHITE ? "K" : "k";
+    case PieceType.QUEEN:
+      return playerColor === PlayerColor.WHITE ? "Q" : "q";
+    case PieceType.ROOK:
+      return playerColor === PlayerColor.WHITE ? "R" : "r";
+    case PieceType.BISHOP:
+      return playerColor === PlayerColor.WHITE ? "B" : "b";
+    case PieceType.KNIGHT:
+      return playerColor === PlayerColor.WHITE ? "N" : "n";
+    case PieceType.PAWN:
+      return playerColor === PlayerColor.WHITE ? "P" : "p";
     default:
       throw new Error("Unknown piece type");
   }
@@ -78,30 +83,46 @@ function generateCastlingAvailability(board) {
 
   const whiteKing =
     chessBoard[ChessBoard.WHITE_MAJOR_PIECE_ROW][ChessBoard.KING_COLUMN];
-  if (whiteKing.getType() === "KING" && !whiteKing.hasMoved) {
+  if (whiteKing && whiteKing.getType() === "KING" && !whiteKing.hasMoved) {
     const whiteKingRook =
       chessBoard[ChessBoard.WHITE_MAJOR_PIECE_ROW][ChessBoard.ROOK_COLUMN_1];
     const whiteQueenRook =
       chessBoard[ChessBoard.WHITE_MAJOR_PIECE_ROW][ChessBoard.ROOK_COLUMN_2];
-    if (whiteKingRook.getType() === "ROOK" && !whiteKingRook.hasMoved) {
+    if (
+      whiteKingRook &&
+      whiteKingRook.getType() === "ROOK" &&
+      !whiteKingRook.hasMoved
+    ) {
       castlingAvailability += "K";
     }
-    if (whiteQueenRook.getType() === "ROOK" && !whiteQueenRook.hasMoved) {
+    if (
+      whiteQueenRook &&
+      whiteQueenRook.getType() === "ROOK" &&
+      !whiteQueenRook.hasMoved
+    ) {
       castlingAvailability += "Q";
     }
   }
 
   const blackKing =
     chessBoard[ChessBoard.BLACK_MAJOR_PIECE_ROW][ChessBoard.KING_COLUMN];
-  if (blackKing.getType() === "KING" && !blackKing.hasMoved) {
+  if (blackKing && blackKing.getType() === "KING" && !blackKing.hasMoved) {
     const blackKingRook =
       chessBoard[ChessBoard.BLACK_MAJOR_PIECE_ROW][ChessBoard.ROOK_COLUMN_1];
     const blackQueenRook =
       chessBoard[ChessBoard.BLACK_MAJOR_PIECE_ROW][ChessBoard.ROOK_COLUMN_2];
-    if (blackKingRook.getType() === "ROOK" && !blackKingRook.hasMoved) {
+    if (
+      blackKingRook &&
+      blackKingRook.getType() === "ROOK" &&
+      !blackKingRook.hasMoved
+    ) {
       castlingAvailability += "k";
     }
-    if (blackQueenRook.getType() === "ROOK" && !blackQueenRook.hasMoved) {
+    if (
+      blackQueenRook &&
+      blackQueenRook.getType() === "ROOK" &&
+      !blackQueenRook.hasMoved
+    ) {
       castlingAvailability += "q";
     }
   }

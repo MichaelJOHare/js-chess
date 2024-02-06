@@ -12,13 +12,22 @@
         <canvas id="chessboard"></canvas>
       </div>
       <div id="sidebar">
+        <div id="move-history-title"><h1>Move History</h1></div>
+        <div id="move-history"></div>
+        <div id="fen-import-container" style="display: none">
+          <textarea id="fen-input" placeholder="Enter FEN"></textarea>
+          <button id="submit-fen">Import FEN</button>
+        </div>
         <div id="navigation">
           <button id="prev-move">←</button>
+          <button id="import-from-fen">Import Game from FEN</button>
           <button id="next-move">→</button>
         </div>
-        <textarea id="pgn-box" placeholder="PGN"></textarea>
-        <textarea id="fen-box" placeholder="FEN"></textarea>
       </div>
+    </div>
+    <div id="text-areas-container">
+      <textarea id="fen-box" placeholder="FEN"></textarea>
+      <textarea id="pgn-box" placeholder="PGN"></textarea>
     </div>
     <script type="module" src="/chess/main.js"></script>
   </body>

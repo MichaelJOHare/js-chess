@@ -35,7 +35,6 @@ class ChessBoardPanel {
     );
 
     this.squareSize = 0;
-    this.setScreen();
 
     this.boardHighlighter = new ChessBoardHighlighter(
       this.board,
@@ -44,9 +43,8 @@ class ChessBoardPanel {
       this.offscreenCtx,
       this.imageLoader
     );
-    this.updateSquareSize();
     this.imageLoader.loadPieceImages().then(() => {
-      this.drawBoard();
+      this.setScreen();
     });
   }
 
@@ -211,26 +209,27 @@ class ChessBoardPanel {
   }
 
   setScreen() {
-    const scaleRatio = this.getScaleRatio();
-
-    this.canvas.width = Math.min(
-      ChessBoardPanel.GAME_WIDTH * scaleRatio,
-      this.boardContainer.offsetWidth
+    const size = Math.min(
+      this.boardContainer.offsetWidth,
+      this.boardContainer.offsetHeight
     );
-    this.canvas.height = ChessBoardPanel.GAME_HEIGHT * scaleRatio;
 
-    this.boardContainer.style.width = `${
-      ChessBoardPanel.GAME_WIDTH * scaleRatio
-    }px`;
-    this.boardContainer.style.height = `${
-      ChessBoardPanel.GAME_HEIGHT * scaleRatio
-    }px`;
+    const textAreasContainer = document.getElementById("text-areas-container");
+    textAreasContainer.style.width = size + "px";
 
-    this.squareSize = this.canvas.width / 8;
+    this.canvas.width = size;
+    this.canvas.height = size;
 
-    this.offscreenCanvas.width = this.canvas.width;
-    this.offscreenCanvas.height = this.canvas.height;
+    this.squareSize = size / 8;
 
+    this.offscreenCanvas.width = size;
+    this.offscreenCanvas.height = size;
+
+    this.updatePromotionSelector();
+    this.updateSquareSize();
+  }
+
+  updatePromotionSelector() {
     if (this.promotionSelector.activePromotionSelector) {
       const { selector, move } = this.promotionSelector.activePromotionSelector;
       const pawnPosition = move.getEndSquare();
@@ -259,6 +258,31 @@ class ChessBoardPanel {
     this.drawBoard();
   }
 
+  onImportFromFENButtonClick() {
+    this.toggleFENInput();
+  }
+
+  toggleFENInput() {
+    const fenImportContainer = document.getElementById("fen-import-container");
+    fenImportContainer.style.display =
+      fenImportContainer.style.display === "none" ? "block" : "none";
+  }
+
+  onSubmitFENButtonClick() {
+    const fenInput = document.getElementById("fen-input");
+    const fenString = fenInput.value;
+    if (fenString) {
+      this.guiController.handleFENImport(fenString);
+    }
+    fenInput.value = "";
+    this.toggleFENInput();
+  }
+
+  writeCurrentFENString(fenString) {
+    const fenBox = document.getElementById("fen-box");
+    fenBox.value = fenString;
+  }
+
   setupEventListeners() {
     this.canvas.addEventListener(
       "mousedown",
@@ -275,50 +299,31 @@ class ChessBoardPanel {
 
     const previousMoveButton = document.getElementById("prev-move");
     const nextMoveButton = document.getElementById("next-move");
+    const importFromFENButton = document.getElementById("import-from-fen");
+    const submitFENButton = document.getElementById("submit-fen");
+
     previousMoveButton.addEventListener("click", () => {
       this.onPreviousMoveButtonClick();
     });
     nextMoveButton.addEventListener("click", () => {
       this.onNextMoveButtonClick();
     });
+    importFromFENButton.addEventListener("click", () => {
+      this.onImportFromFENButtonClick();
+    });
+    submitFENButton.addEventListener("click", () => {
+      this.onSubmitFENButtonClick();
+    });
 
     if (screen.orientation) {
       screen.orientation.addEventListener("change", () => {
-        this.setScreen();
-        this.updateSquareSize();
-        this.ctx.drawImage(this.offscreenCanvas, 0, 0);
+        this.setScreen().bind(this);
       });
     }
-    this.resizeTimeout;
-    window.addEventListener("resize", () => {
-      clearTimeout(this.resizeTimeout);
-      this.resizeTimeout = setTimeout(() => {
-        this.setScreen();
-        this.updateSquareSize();
-        this.ctx.drawImage(this.offscreenCanvas, 0, 0);
-      }, 50);
-    });
-  }
-
-  getScaleRatio() {
-    const screenHeight = Math.min(
-      window.innerHeight,
-      document.documentElement.clientHeight
+    window.addEventListener(
+      "resize",
+      this.debounce(this.setScreen.bind(this), 50)
     );
-
-    const screenWidth = Math.min(
-      window.innerWidth,
-      document.documentElement.clientWidth
-    );
-
-    if (
-      screenWidth / screenHeight <
-      ChessBoardPanel.GAME_WIDTH / ChessBoardPanel.GAME_HEIGHT
-    ) {
-      return screenWidth / ChessBoardPanel.GAME_WIDTH;
-    } else {
-      return screenHeight / ChessBoardPanel.GAME_HEIGHT;
-    }
   }
 
   updateSquareSize() {
@@ -330,6 +335,22 @@ class ChessBoardPanel {
       this.eventHandlers.updateSquareSize(this.squareSize);
     }
     this.drawBoard();
+  }
+
+  debounce(func, wait, immediate) {
+    let timeout;
+    return function () {
+      const context = this,
+        args = arguments;
+      const later = function () {
+        timeout = null;
+        if (!immediate) func.apply(context, args);
+      };
+      const callNow = immediate && !timeout;
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+      if (callNow) func.apply(context, args);
+    };
   }
 }
 

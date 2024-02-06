@@ -22,16 +22,16 @@ class BaseMovementStrategy extends MovementStrategy {
     const copiedBoard = board.copy();
     const copiedMoveHistory = moveHistory.copy();
     const copiedPiece = piece.copy();
+    const copiedCapturedPiece = move.getCapturedPiece()
+      ? move.getCapturedPiece().copy()
+      : null;
     const copiedPlayer = copiedPiece.getPlayer();
 
     const copiedMove = new Move(
       copiedPiece,
       move.getStartSquare(),
       move.getEndSquare(),
-      copiedBoard.getPieceAt(
-        move.getEndSquare().getRow(),
-        move.getEndSquare().getCol()
-      ),
+      copiedCapturedPiece,
       copiedBoard
     );
 

@@ -27,6 +27,15 @@ class GUIController {
     return this.gameController.handleNextMoveButtonClick();
   }
 
+  writeCurrentFENString() {
+    const currentFENString = this.gameController.generateCurrentFEN();
+    this.chessBoardPanel.writeCurrentFENString(currentFENString);
+  }
+
+  handleFENImport(fenString) {
+    this.gameController.initiateGameFromFEN(fenString);
+  }
+
   handlePawnPromotion(move, callback) {
     this.chessBoardPanel.showPromotionSelector(move, callback);
   }
@@ -44,11 +53,17 @@ class GUIController {
     this.chessBoardPanel.drawKingCheckHighlightedSquare(square);
   }
 
+  clearHighlightedSquares() {
+    this.chessBoardPanel.clearHighlights();
+    this.chessBoardPanel.clearPreviousMoveHighlights();
+  }
+
   clearKingCheckHighlightedSquare(square) {
     this.chessBoardPanel.clearKingCheckHighlightedSquare(square);
   }
 
   updateGUI() {
+    this.writeCurrentFENString();
     this.chessBoardPanel.drawBoard();
   }
 }

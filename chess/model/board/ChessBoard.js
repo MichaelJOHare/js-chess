@@ -7,6 +7,7 @@ import Bishop from "../pieces/Bishop.js";
 import Knight from "../pieces/Knight.js";
 import Queen from "../pieces/Queen.js";
 import King from "../pieces/King.js";
+import Move from "../moves/Move.js";
 
 class ChessBoard {
   static ROW_LENGTH = 8;
@@ -72,6 +73,147 @@ class ChessBoard {
         player2,
         ChessBoard.WHITE_PAWN_ROW
       );
+    }
+  }
+
+  initializeBoardFromFEN(fenString, player1, player2) {
+    this.clearBoard();
+
+    const [
+      position,
+      activeColor,
+      castlingAvailability,
+      enPassantTarget,
+      halfMoveClock,
+      fullMoveNumber,
+    ] = fenString.split(" ");
+
+    const whitePlayer = player1.isWhite() ? player1 : player2;
+    const blackPlayer = player1.isWhite() ? player2 : player1;
+
+    const rows = position.split("/");
+    for (let row = 0; row < rows.length; row++) {
+      let col = 0;
+      for (const char of rows[row]) {
+        if (Number.isInteger(parseInt(char))) {
+          col += parseInt(char);
+        } else {
+          const player =
+            char === char.toUpperCase() ? whitePlayer : blackPlayer;
+          this.board[row][col] = this.fenToPiece(char, player, row, col);
+          col++;
+        }
+      }
+    }
+
+    this.setCastlingFlags(castlingAvailability);
+    const epMove =
+      enPassantTarget != "-"
+        ? this.setEnPassantTarget(enPassantTarget, activeColor)
+        : null;
+    this.initializePieceManager();
+    const boardContext = { activeColor, epMove, halfMoveClock, fullMoveNumber };
+    return boardContext;
+  }
+
+  setCastlingFlags(castlingAvailability) {
+    this.markAllKingsAndRooksAsMoved();
+
+    if (castlingAvailability.includes("K")) {
+      this.markKingAndRookAsNotMoved(
+        ChessBoard.WHITE_MAJOR_PIECE_ROW,
+        ChessBoard.KING_COLUMN,
+        ChessBoard.ROOK_COLUMN_2
+      );
+    }
+    if (castlingAvailability.includes("Q")) {
+      this.markKingAndRookAsNotMoved(
+        ChessBoard.WHITE_MAJOR_PIECE_ROW,
+        ChessBoard.KING_COLUMN,
+        ChessBoard.ROOK_COLUMN_1
+      );
+    }
+    if (castlingAvailability.includes("k")) {
+      this.markKingAndRookAsNotMoved(
+        ChessBoard.BLACK_MAJOR_PIECE_ROW,
+        ChessBoard.KING_COLUMN,
+        ChessBoard.ROOK_COLUMN_2
+      );
+    }
+    if (castlingAvailability.includes("q")) {
+      this.markKingAndRookAsNotMoved(
+        ChessBoard.BLACK_MAJOR_PIECE_ROW,
+        ChessBoard.KING_COLUMN,
+        ChessBoard.ROOK_COLUMN_1
+      );
+    }
+  }
+
+  markAllKingsAndRooksAsMoved() {
+    for (let row = 0; row < ChessBoard.ROW_LENGTH; row++) {
+      for (let col = 0; col < ChessBoard.COLUMN_LENGTH; col++) {
+        let piece = this.board[row][col];
+        if (piece && typeof piece.setHasMoved === "function") {
+          piece.setHasMoved(true);
+        }
+      }
+    }
+  }
+
+  markKingAndRookAsNotMoved(row, kingCol, rookCol) {
+    const king = this.board[row][kingCol];
+    if (king && king instanceof King) {
+      king.setHasMoved(false);
+    }
+
+    const rook = this.board[row][rookCol];
+    if (rook && rook instanceof Rook) {
+      rook.setHasMoved(false);
+    }
+  }
+
+  setEnPassantTarget(epTargetSquare, activeColor) {
+    const epSquare = Square.getSquareFromNotation(epTargetSquare);
+    const directionTraveled = activeColor === "w" ? -1 : 1;
+    const directionFrom = activeColor === "w" ? 1 : -1;
+    const originSquare = new Square(epSquare.row + directionFrom, epSquare.col);
+    const destinationSquare = new Square(
+      epSquare.row + directionTraveled,
+      epSquare.col
+    );
+    const epPawn = this.board.getPieceAt(
+      epSquare.row + directionTraveled,
+      epSquare.col
+    );
+    const epMove = new Move(
+      epPawn,
+      originSquare,
+      destinationSquare,
+      null,
+      this
+    );
+    return epMove;
+  }
+
+  fenToPiece(fenChar, player, row, col) {
+    const square = new Square(row, col);
+    const lowerChar = fenChar.toLowerCase();
+
+    switch (lowerChar) {
+      case "k":
+        return new King(square, player);
+      case "q":
+        return new Queen(square, player);
+      case "r":
+        return new Rook(square, player);
+      case "b":
+        return new Bishop(square, player);
+      case "n":
+        return new Knight(square, player);
+      case "p":
+        return new Pawn(square, player);
+      default:
+        throw new Error("Invalid FEN character: " + fenChar);
     }
   }
 
@@ -164,7 +306,7 @@ class ChessBoard {
 
   isSquareAttackedByOpponent(row, col, player) {
     for (const piece of this.pieceManager.getOpposingPieces(player)) {
-      if (piece instanceof Pawn) {
+      if (piece instanceof Pawn && piece.isAlive()) {
         if (
           this.isSquareAttackedByPawn(
             piece.getCurrentSquare().getRow(),
