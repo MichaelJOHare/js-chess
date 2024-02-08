@@ -6,6 +6,7 @@ body {
 }
 
 #outer-container {
+  display: flex;
   margin: 20px;
 }
 
@@ -38,10 +39,10 @@ body {
 
 #sidebar {
   flex-grow: 1;
-  max-width: calc(100% - 75vmin - 20px);
+  height: 75vmin;
+  max-width: 325px;
   min-width: 225px;
-  margin-left: 20px;
-  margin-bottom: 20px;
+  margin: 0px 20px 20px 20px;
   display: flex;
   flex-direction: column;
 }
@@ -98,7 +99,7 @@ body {
 #text-areas-container {
   width: 100%;
   flex: 1;
-  margin: 20px 20px 0px 0px;
+  margin-top: 20px;
 }
 
 #pgn-box,
@@ -109,14 +110,14 @@ body {
 }
 
 #pgn-box {
-  height: 100px;
+  height: 75px;
 }
 
 #fen-box {
-  height: 50px;
+  height: 35px;
 }
 
-@media (max-width: 970px) {
+@media (max-width: 1010px) {
   body {
     flex-direction: column;
     align-items: center;
@@ -152,35 +153,35 @@ body {
   #outer-container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centers children horizontally */
-    justify-content: flex-start; /* Aligns children to the start vertically */
+    align-items: center;
+    justify-content: flex-start;
     width: 100%;
     max-width: 1150px;
-    margin: auto; /* Centers the container within its parent */
+    margin: auto;
   }
 
   #game-container {
     display: flex;
-    justify-content: center; /* Centers the chessboard and sidebar within the game-container */
+    justify-content: center;
     width: 100%;
   }
 
   #chessboard-container {
-    width: 75vmin; /* Specific width of the chessboard */
-    height: 75vmin; /* Maintains aspect ratio of the chessboard */
+    width: 75vmin;
+    height: 75vmin;
   }
 
   #sidebar {
-    width: 275px; /* Specific width for the sidebar */
-    max-width: 275px;
+    width: 325px;
+    max-width: 325px;
   }
 
   #text-areas-container {
-    width: 75vmin; /* Matches the chessboard's width to ensure alignment */
-    margin-top: 20px; /* Adds vertical space between the game-container and text-areas-container */
+    width: 75vmin;
+    margin-top: 20px;
     display: flex;
-    justify-content: center; /* Centers its content if needed */
-    flex-direction: column; /* Stacks any child elements vertically */
-    align-items: center; /* Centers child elements horizontally if they're narrower than 75vmin */
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
   }
 }
