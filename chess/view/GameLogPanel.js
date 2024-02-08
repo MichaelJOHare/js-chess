@@ -16,15 +16,9 @@ class GameLogPanel {
 
   writeToGameLog() {
     let pastMoves = this.moveHistory.history;
-    let undoneMoves = this.moveHistory.undone;
-    let combinedMoves = [
-      ...pastMoves, // vv might use in future to create branching vv
-      ...undoneMoves.map((move) => ({ ...move, isUndone: true })),
-    ];
-
     let currentMoveDiv;
 
-    combinedMoves.forEach((move, index) => {
+    pastMoves.forEach((move, index) => {
       let moveNotation = this.createGameLogObject(move);
       let moveId = "move-" + index;
 
@@ -57,8 +51,8 @@ class GameLogPanel {
     let movingPiece = move.piece;
     let pieceSymbol = "";
     let endSquare = move.endSquare;
-    // Need to figure out if two of the same knight/rook could've captured or moved from same file or rank ->
-    //                     include rank if on same file, file if on same rank
+    // Need to figure out if two of the same player's knight/rook could've captured or moved from same file or rank ->
+    //            include rank if on same file, file if on same rank for disambiguation
     let captureSymbol = move.isCapture ? "x" : "";
 
     if (!(movingPiece instanceof Pawn)) {
@@ -81,19 +75,21 @@ class GameLogPanel {
     let currentMoveIndex = this.moveHistory.history.length - 1;
     let movesToUndoRedo = clickedIndex - currentMoveIndex;
 
+    this.gui.clearHighlightedSquares();
+
     if (movesToUndoRedo < 0) {
       // Undo moves
       for (let i = movesToUndoRedo; i < 0; i++) {
-        this.moveHistory.undoMove();
+        this.gui.handleSingleUndo();
       }
     } else if (movesToUndoRedo > 0) {
       // Redo moves
       for (let i = 0; i < movesToUndoRedo; i++) {
-        this.moveHistory.redoMove();
+        this.gui.handleNextMoveButtonClick();
       }
     }
 
-    this.gui.updateGUI();
+    this.updateGameLog();
   }
 }
 

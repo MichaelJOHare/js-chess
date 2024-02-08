@@ -27,6 +27,10 @@ class GUIController {
     this.gameLogPanel.updateGameLog();
   }
 
+  handleSingleUndo() {
+    this.gameController.handleSingleUndo();
+  }
+
   handleNextMoveButtonClick() {
     const moveToHighlight = this.gameController.handleNextMoveButtonClick();
     this.writeCurrentFENString();

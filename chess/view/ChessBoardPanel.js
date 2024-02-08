@@ -64,6 +64,7 @@ class ChessBoardPanel {
   }
 
   drawBoard() {
+    console.trace();
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         this.offscreenCtx.fillStyle =
@@ -247,13 +248,11 @@ class ChessBoardPanel {
   onPreviousMoveButtonClick() {
     this.guiController.handlePreviousMoveButtonClick();
     this.clearHighlights();
-    this.drawBoard();
   }
 
   onNextMoveButtonClick() {
     const moveToHighlight = this.guiController.handleNextMoveButtonClick();
     this.drawPreviousMoveHighlightedSquares(moveToHighlight);
-    this.drawBoard();
   }
 
   onImportFromFENButtonClick() {

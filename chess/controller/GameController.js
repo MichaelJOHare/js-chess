@@ -81,7 +81,6 @@ class GameController {
     if (this.gs.getCurrentPlayer().isStockfish()) {
       this.makeStockfishMove();
     }
-    this.guiController.updateGUI();
   }
 
   handleDragStart(row, col) {
@@ -98,11 +97,14 @@ class GameController {
     if (this.gs.getCurrentPlayer().isStockfish()) {
       this.makeStockfishMove();
     }
-    this.guiController.updateGUI();
   }
 
   handlePreviousMoveButtonClick() {
     this.mh.handleUndoMove();
+  }
+
+  handleSingleUndo() {
+    this.mh.handleSingleUndo();
   }
 
   handleNextMoveButtonClick() {

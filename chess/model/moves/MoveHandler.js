@@ -74,8 +74,6 @@ class MoveHandler {
     if (!legalMove) {
       //this.tryAgainPrompt(() => this.gui.moveIsNotLegalLogText());
       console.log("illegal move");
-      this.selectedPiece = null;
-      this.isFirstClick = true;
       return;
     }
 
@@ -126,6 +124,7 @@ class MoveHandler {
       console.log("illegal move");
       this.isFirstClick = true;
       this.selectedPiece = null;
+      this.gui.updateGUI();
       return;
     }
 
@@ -150,7 +149,6 @@ class MoveHandler {
     this.move.makeMove(legalMove);
     this.pm.handlePromotion(this.move.getLastMove());
     // this.handleCapturedPieces(legalMove, false);
-    // this.gui.updateGUI(); <-- unneeded?
     this.isFirstClick = true;
     this.gs.swapPlayers();
     // this.gui.currentPlayerLogText(this.gs.getCurrentPlayer());
