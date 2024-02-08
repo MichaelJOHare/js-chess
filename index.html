@@ -9,8 +9,14 @@
   <body>
     <div id="outer-container">
       <div id="game-container">
-        <div id="chessboard-container">
-          <canvas id="chessboard"></canvas>
+        <div class="chessboard-wrapper">
+          <div id="chessboard-container">
+            <canvas id="chessboard"></canvas>
+          </div>
+          <div id="text-areas-container">
+            <textarea id="fen-box" placeholder="FEN"></textarea>
+            <textarea id="pgn-box" placeholder="PGN"></textarea>
+          </div>
         </div>
         <div id="sidebar">
           <div id="move-history-title"><h1>Move History</h1></div>
@@ -25,10 +31,6 @@
             <button id="next-move">→</button>
           </div>
         </div>
-      </div>
-      <div id="text-areas-container">
-        <textarea id="fen-box" placeholder="FEN"></textarea>
-        <textarea id="pgn-box" placeholder="PGN"></textarea>
       </div>
     </div>
     <script type="module" src="/chess/main.js"></script>

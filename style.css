@@ -41,6 +41,7 @@ body {
   max-width: calc(100% - 75vmin - 20px);
   min-width: 225px;
   margin-left: 20px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
 }
@@ -115,5 +116,71 @@ body {
   height: 50px;
 }
 
-/*After 1200px width, center everything
-  Under 800px width, put move history under chessboard (columns)*/
+@media (max-width: 970px) {
+  body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #outer-container,
+  #game-container,
+  #text-areas-container {
+    width: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #sidebar {
+    width: 75%;
+    max-width: none;
+    margin: 0;
+  }
+
+  #move-history {
+    min-height: 150px;
+    width: 100%;
+  }
+
+  #text-areas-container {
+    margin: 20px 0px 0px 0px;
+    align-self: center;
+  }
+}
+
+@media (min-width: 1150px) {
+  #outer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers children horizontally */
+    justify-content: flex-start; /* Aligns children to the start vertically */
+    width: 100%;
+    max-width: 1150px;
+    margin: auto; /* Centers the container within its parent */
+  }
+
+  #game-container {
+    display: flex;
+    justify-content: center; /* Centers the chessboard and sidebar within the game-container */
+    width: 100%;
+  }
+
+  #chessboard-container {
+    width: 75vmin; /* Specific width of the chessboard */
+    height: 75vmin; /* Maintains aspect ratio of the chessboard */
+  }
+
+  #sidebar {
+    width: 275px; /* Specific width for the sidebar */
+    max-width: 275px;
+  }
+
+  #text-areas-container {
+    width: 75vmin; /* Matches the chessboard's width to ensure alignment */
+    margin-top: 20px; /* Adds vertical space between the game-container and text-areas-container */
+    display: flex;
+    justify-content: center; /* Centers its content if needed */
+    flex-direction: column; /* Stacks any child elements vertically */
+    align-items: center; /* Centers child elements horizontally if they're narrower than 75vmin */
+  }
+}
