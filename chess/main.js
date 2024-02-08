@@ -5,11 +5,8 @@ console.log("GameController initialized", gameController);
 
 /*
 TO DO
- - Fix draggingdiv location incorrect after resizing window
-
- - Fix Move history scrollbar when viewport really tall and skinny before media query
-        - move next/prev move buttons in small screen media query (fix move history being under text areas too)
- - Debug possible memory leak (might be extension react dev tools or stockfish idk yet)
+ - Debug possible memory leak
+    - Relatively confident slow leak is from dark reader, live server, or a combination of both.
 
  - Go through and change private fields to normal, remove getters.
      -Thought it was a good idea, not liking it now.  Maybe keep setters?  They make sense in my brain

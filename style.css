@@ -7,18 +7,28 @@ body {
 
 #outer-container {
   display: flex;
-  margin: 20px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 1150px;
+  margin: auto;
 }
 
 #game-container {
   display: flex;
-  flex-grow: 1;
+  justify-content: center;
+  width: 100%;
+}
+
+.chessboard-wrapper {
+  margin-left: 20px;
 }
 
 #chessboard-container {
-  width: 75vmin;
-  height: 75vmin;
-  min-width: 75vmin;
+  width: 70vmin;
+  height: 70vmin;
+  min-width: 70vmin;
   position: relative;
 }
 
@@ -39,7 +49,7 @@ body {
 
 #sidebar {
   flex-grow: 1;
-  height: 75vmin;
+  height: 70vmin;
   max-width: 325px;
   min-width: 225px;
   margin: 0px 20px 20px 20px;
@@ -97,9 +107,12 @@ body {
 }
 
 #text-areas-container {
-  width: 100%;
-  flex: 1;
+  width: 70vmin;
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 #pgn-box,
@@ -132,10 +145,18 @@ body {
     flex-direction: column;
   }
 
+  .chessboard-wrapper {
+    margin-left: 0;
+    margin-top: 20px;
+    order: 1;
+  }
+
   #sidebar {
-    width: 75%;
+    order: 2;
+    width: 70vmin;
     max-width: none;
     margin: 0;
+    margin-bottom: 20px;
   }
 
   #move-history {
@@ -143,45 +164,14 @@ body {
     width: 100%;
   }
 
-  #text-areas-container {
-    margin: 20px 0px 0px 0px;
-    align-self: center;
-  }
-}
-
-@media (min-width: 1150px) {
-  #outer-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    max-width: 1150px;
-    margin: auto;
-  }
-
-  #game-container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-
-  #chessboard-container {
-    width: 75vmin;
-    height: 75vmin;
-  }
-
-  #sidebar {
-    width: 325px;
-    max-width: 325px;
-  }
-
-  #text-areas-container {
-    width: 75vmin;
+  #navigation {
+    order: -1;
     margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
+  }
+
+  #text-areas-container {
+    order: 3;
+    margin-top: 20px;
+    align-self: center;
   }
 }

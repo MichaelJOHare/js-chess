@@ -5,7 +5,6 @@ class EventHandlers {
     clearHighlightsCallback,
     clearSquareOnCanvasCallback,
     drawGhostPieceOnCanvasCallback,
-    boardContainer,
     guiController,
     imageLoader,
     canvas,
@@ -14,13 +13,13 @@ class EventHandlers {
     this.clearHighlights = clearHighlightsCallback;
     this.clearSquareOnCanvas = clearSquareOnCanvasCallback;
     this.drawGhostPieceOnCanvas = drawGhostPieceOnCanvasCallback;
-    this.boardContainer = boardContainer;
+    this.boardContainer = document.querySelector(".chessboard-wrapper");
     this.guiController = guiController;
     this.imageLoader = imageLoader;
     this.canvas = canvas;
     this.board = board;
 
-    this.squareSize = this.canvas.width / 8;
+    this.squareSize = 0;
     this.dragInitiated = false;
     this.isDragging = false;
     this.originalSquare = null;

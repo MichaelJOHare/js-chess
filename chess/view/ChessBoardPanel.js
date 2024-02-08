@@ -35,6 +35,7 @@ class ChessBoardPanel {
     );
 
     this.squareSize = 0;
+    this.setScreen = this.setScreen.bind(this);
 
     this.boardHighlighter = new ChessBoardHighlighter(
       this.board,
@@ -54,7 +55,6 @@ class ChessBoardPanel {
       this.clearHighlights.bind(this),
       this.clearSquareOnCanvas.bind(this),
       this.drawGhostPieceOnCanvas.bind(this),
-      this.boardContainer,
       this.guiController,
       this.imageLoader,
       this.canvas,
@@ -214,9 +214,6 @@ class ChessBoardPanel {
       this.boardContainer.offsetHeight
     );
 
-    const textAreasContainer = document.getElementById("text-areas-container");
-    textAreasContainer.style.width = size + "px";
-
     this.canvas.width = size;
     this.canvas.height = size;
 
@@ -225,6 +222,7 @@ class ChessBoardPanel {
     this.offscreenCanvas.width = size;
     this.offscreenCanvas.height = size;
 
+    this.reorderSidebarBasedOnScreenWidth();
     this.updatePromotionSelector();
     this.updateSquareSize();
   }
@@ -283,6 +281,21 @@ class ChessBoardPanel {
     fenBox.value = fenString;
   }
 
+  reorderSidebarBasedOnScreenWidth() {
+    const screenWidth = window.innerWidth;
+    const chessboardWrapper = document.querySelector(".chessboard-wrapper");
+    const sidebar = document.getElementById("sidebar");
+    const textAreasContainer = document.getElementById("text-areas-container");
+
+    const isSidebarInside = sidebar.parentNode === chessboardWrapper;
+
+    if (screenWidth <= 1010 && !isSidebarInside) {
+      chessboardWrapper.insertBefore(sidebar, textAreasContainer);
+    } else if (screenWidth > 1010 && isSidebarInside) {
+      document.getElementById("game-container").appendChild(sidebar);
+    }
+  }
+
   setupEventListeners() {
     this.canvas.addEventListener(
       "mousedown",
@@ -320,10 +333,7 @@ class ChessBoardPanel {
         this.setScreen().bind(this);
       });
     }
-    window.addEventListener(
-      "resize",
-      this.debounce(this.setScreen.bind(this), 50)
-    );
+    window.addEventListener("resize", this.debounce(this.setScreen, 50));
   }
 
   updateSquareSize() {
