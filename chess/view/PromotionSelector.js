@@ -3,6 +3,7 @@ class PromotionSelector {
     this.drawBoard = drawBoardCallback;
     this.boardContainer = boardContainer;
     this.imageLoader = imageLoader;
+    this.squareSize = 0;
 
     this.activePromotionSelector = null;
   }
@@ -105,6 +106,10 @@ class PromotionSelector {
 
       this.drawBoard();
     }
+  }
+
+  updateSquareSize(squareSize) {
+    this.squareSize = squareSize;
   }
 }
 

@@ -150,7 +150,7 @@ class MoveHandler {
     this.move.makeMove(legalMove);
     this.pm.handlePromotion(this.move.getLastMove());
     // this.handleCapturedPieces(legalMove, false);
-    this.gui.updateGUI();
+    // this.gui.updateGUI(); <-- unneeded?
     this.isFirstClick = true;
     this.gs.swapPlayers();
     // this.gui.currentPlayerLogText(this.gs.getCurrentPlayer());

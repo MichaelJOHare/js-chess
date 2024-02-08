@@ -1,7 +1,6 @@
 import Move from "../../moves/Move.js";
-import MovementStrategy from "./MovementStrategy.js";
 
-class BaseMovementStrategy extends MovementStrategy {
+class BaseMovementStrategy {
   calculateLegalMoves(board, piece, moveHistory) {
     const rawLegalMoves = this.calculateRawLegalMoves(
       board,
@@ -45,7 +44,16 @@ class BaseMovementStrategy extends MovementStrategy {
     );
   }
 
-  calculateRawLegalMoves(board, piece, moveHistory) {
+  /**
+   * Calculates the raw legal moves for a piece on the board.
+   * This method is abstract and must be implemented by subclasses.
+   *
+   * @param {Board} board - The game board.
+   * @param {Piece} piece - The piece to calculate moves for.
+   * @param {Array} moveHistory - The history of moves made in the game.
+   * @throws {Error} Throws an error if not implemented.
+   */
+  calculateRawLegalMoves() {
     throw new Error("calculateRawLegalMoves must be implemented by subclasses");
   }
 }

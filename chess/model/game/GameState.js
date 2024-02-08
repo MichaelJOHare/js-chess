@@ -74,6 +74,17 @@ class GameState {
     return this.currentPlayer;
   }
 
+  setCurrentPlayerFromFEN(activeColor) {
+    this.currentPlayer =
+      (activeColor === "w") === this.player1.isWhite()
+        ? this.player1
+        : this.player2;
+    this.opposingPlayer =
+      (activeColor === "w") === this.player1.isWhite()
+        ? this.player2
+        : this.player1;
+  }
+
   getOpposingPlayer() {
     return this.opposingPlayer;
   }

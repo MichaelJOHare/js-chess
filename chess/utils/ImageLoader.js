@@ -1,4 +1,4 @@
-class ImageLoader {
+export default class ImageLoader {
   constructor() {
     this.pieceImages = {};
   }
@@ -42,5 +42,3 @@ class ImageLoader {
     return `${colorCapitalized}_${typeCapitalized}`;
   }
 }
-
-export default ImageLoader;

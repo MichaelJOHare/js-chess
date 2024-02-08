@@ -144,8 +144,8 @@ class ChessBoardPanel {
       const { startSquare, endSquare, selectorSquares } =
         this.promotionSelector.activePromotionSelector;
       if (
-        (startSquare.row === row && startSquare.col === col) ||
-        (endSquare.row === row && endSquare.col === col) ||
+        (startSquare.getRow() === row && startSquare.getCol() === col) ||
+        (endSquare.getRow() === row && endSquare.getCol() === col) ||
         selectorSquares.some((sq) => sq.row === row && sq.col === col)
       ) {
         return true;
@@ -333,6 +333,9 @@ class ChessBoardPanel {
     }
     if (this.eventHandlers) {
       this.eventHandlers.updateSquareSize(this.squareSize);
+    }
+    if (this.promotionSelector) {
+      this.promotionSelector.updateSquareSize(this.squareSize);
     }
     this.drawBoard();
   }

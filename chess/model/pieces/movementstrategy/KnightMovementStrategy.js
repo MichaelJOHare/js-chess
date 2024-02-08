@@ -3,7 +3,11 @@ import Square from "../../board/Square.js";
 import Move from "../../moves/Move.js";
 
 class KnightMovementStrategy extends BaseMovementStrategy {
-  calculateRawLegalMoves(board, piece, moveHistory) {
+  calculateRawLegalMoves(
+    board,
+    piece,
+    /* eslint-disable-line no-unused-vars */ moveHistory
+  ) {
     let rawLegalMoves = [];
     let row = piece.getCurrentSquare().getRow();
     let col = piece.getCurrentSquare().getCol();

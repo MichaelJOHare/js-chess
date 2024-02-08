@@ -1,8 +1,10 @@
 import ChessBoardPanel from "../view/ChessBoardPanel.js";
+import GameLogPanel from "../view/GameLogPanel.js";
 
 class GUIController {
-  constructor(board, gameController) {
+  constructor(board, moveHistory, gameController) {
     this.chessBoardPanel = new ChessBoardPanel(board);
+    this.gameLogPanel = new GameLogPanel(moveHistory, this);
     this.chessBoardPanel.init(this);
     this.gameController = gameController;
   }
@@ -21,10 +23,15 @@ class GUIController {
 
   handlePreviousMoveButtonClick() {
     this.gameController.handlePreviousMoveButtonClick();
+    this.writeCurrentFENString();
+    this.gameLogPanel.updateGameLog();
   }
 
   handleNextMoveButtonClick() {
-    return this.gameController.handleNextMoveButtonClick();
+    const moveToHighlight = this.gameController.handleNextMoveButtonClick();
+    this.writeCurrentFENString();
+    this.gameLogPanel.updateGameLog();
+    return moveToHighlight;
   }
 
   writeCurrentFENString() {
@@ -64,6 +71,7 @@ class GUIController {
 
   updateGUI() {
     this.writeCurrentFENString();
+    this.gameLogPanel.updateGameLog();
     this.chessBoardPanel.drawBoard();
   }
 }

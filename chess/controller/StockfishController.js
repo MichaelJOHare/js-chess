@@ -1,6 +1,8 @@
 class StockfishController {
   constructor() {
-    this.stockfish = new Worker("./chess/stockfish/stockfish-nnue-16.js");
+    this.stockfish = new Worker(
+      "./chess/stockfish/stockfish-nnue-16-single.js"
+    );
     this.stockfish.onmessage = this.handleStockfishMessage.bind(this);
 
     this.initEngine();

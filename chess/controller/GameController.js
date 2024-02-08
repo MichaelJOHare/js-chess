@@ -4,10 +4,9 @@ import MoveHistory from "../model/moves/MoveHistory.js";
 import GUIController from "./GUIController.js";
 import MoveHandler from "../model/moves/MoveHandler.js";
 import FENGenerator from "../utils/FENGenerator.js";
+//import StockfishController from "./StockfishController.js";
 
 class GameController {
-  //sfController;
-
   constructor() {
     this.board = new ChessBoard();
     this.gs = new GameState(this.board);
@@ -15,7 +14,7 @@ class GameController {
     this.mementos = [];
     this.move = new MoveHistory();
 
-    this.guiController = new GUIController(this.board, this);
+    this.guiController = new GUIController(this.board, this.move, this);
     this.mh = new MoveHandler(
       this.board,
       this.move,
@@ -24,14 +23,7 @@ class GameController {
       this.mementos,
       this.pm
     );
-    /*
-    this.sfController = new StockfishController(
-      this.board,
-      this.move,
-      this.gs,
-      this.guiController,
-      this.mh
-    ); */
+    //this.sfController = new StockfishController();
 
     this.initiateGame();
   }
@@ -66,9 +58,8 @@ class GameController {
 
     this.move.halfMoveClock = boardContext.halfMoveClock;
     this.move.fullMoveNumber = boardContext.fullMoveNumber;
-    if (boardContext.activeColor === "b") {
-      this.gs.swapPlayers();
-    }
+    this.gs.setCurrentPlayerFromFEN(boardContext.activeColor);
+
     if (boardContext.epMove) {
       this.move.history.push(boardContext.epMove);
     }

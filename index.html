@@ -7,27 +7,29 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <div id="game-container">
-      <div id="chessboard-container">
-        <canvas id="chessboard"></canvas>
-      </div>
-      <div id="sidebar">
-        <div id="move-history-title"><h1>Move History</h1></div>
-        <div id="move-history"></div>
-        <div id="fen-import-container" style="display: none">
-          <textarea id="fen-input" placeholder="Enter FEN"></textarea>
-          <button id="submit-fen">Import FEN</button>
+    <div id="outer-container">
+      <div id="game-container">
+        <div id="chessboard-container">
+          <canvas id="chessboard"></canvas>
         </div>
-        <div id="navigation">
-          <button id="prev-move">←</button>
-          <button id="import-from-fen">Import Game from FEN</button>
-          <button id="next-move">→</button>
+        <div id="sidebar">
+          <div id="move-history-title"><h1>Move History</h1></div>
+          <div id="move-history"></div>
+          <div id="fen-import-container" style="display: none">
+            <textarea id="fen-input" placeholder="Enter FEN"></textarea>
+            <button id="submit-fen">Import FEN</button>
+          </div>
+          <div id="navigation">
+            <button id="prev-move">←</button>
+            <button id="import-from-fen">Import Game from FEN</button>
+            <button id="next-move">→</button>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="text-areas-container">
-      <textarea id="fen-box" placeholder="FEN"></textarea>
-      <textarea id="pgn-box" placeholder="PGN"></textarea>
+      <div id="text-areas-container">
+        <textarea id="fen-box" placeholder="FEN"></textarea>
+        <textarea id="pgn-box" placeholder="PGN"></textarea>
+      </div>
     </div>
     <script type="module" src="/chess/main.js"></script>
   </body>
