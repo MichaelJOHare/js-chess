@@ -28,9 +28,6 @@ class MoveHandler {
       this.selectedPiece.getPlayer() !== this.gs.getCurrentPlayer()
     ) {
       console.log("invalid piece");
-      /*       this.tryAgainPrompt(() =>
-        this.gui.invalidPieceSelectionLogText()
-      ); */
       return;
     }
 
@@ -41,9 +38,9 @@ class MoveHandler {
       );
       if (this.moves.length > 0) {
         this.gui.setHighlightedSquares(this.moves);
+        this.gui.updateGUI();
       } else {
         console.log("no legal move");
-        //this.tryAgainPrompt(() => this.gui.noLegalMoveLogText());
         return;
       }
       this.isFirstClick = false;
@@ -72,13 +69,15 @@ class MoveHandler {
     );
 
     if (!legalMove) {
-      //this.tryAgainPrompt(() => this.gui.moveIsNotLegalLogText());
       console.log("illegal move");
+      this.gui.setHighlightedSquares(this.moves);
+      this.gui.updateGUI();
       return;
     }
 
     this.finalizeMove(legalMove);
     this.handleCheckAndCheckmate();
+    this.gui.updateGUI();
   }
 
   handleDragStart(row, col) {
@@ -88,9 +87,7 @@ class MoveHandler {
       this.selectedPiece === null ||
       this.selectedPiece.getPlayer() !== this.gs.getCurrentPlayer()
     ) {
-      /*       this.tryAgainPrompt(() =>
-        this.gui.invalidPieceSelectionLogText()
-      ); */
+      this.gui.updateGUI();
       return;
     }
 
@@ -101,9 +98,10 @@ class MoveHandler {
       );
       if (this.moves.length > 0) {
         this.gui.setHighlightedSquares(this.moves);
+        this.gui.updateGUI();
         return;
       } else {
-        //this.tryAgainPrompt(() => this.gui.noLegalMoveLogText());
+        this.gui.updateGUI();
         return;
       }
     }
@@ -120,7 +118,6 @@ class MoveHandler {
       !legalMove ||
       this.selectedPiece.getPlayer() !== this.gs.getCurrentPlayer()
     ) {
-      //this.tryAgainPrompt(() => this.gui.moveIsNotLegalLogText());
       console.log("illegal move");
       this.isFirstClick = true;
       this.selectedPiece = null;
@@ -130,6 +127,7 @@ class MoveHandler {
 
     this.finalizeMove(legalMove);
     this.handleCheckAndCheckmate();
+    this.gui.updateGUI();
   }
 
   finalizeMove(legalMove) {
@@ -151,7 +149,6 @@ class MoveHandler {
     // this.handleCapturedPieces(legalMove, false);
     this.isFirstClick = true;
     this.gs.swapPlayers();
-    // this.gui.currentPlayerLogText(this.gs.getCurrentPlayer());
     this.gui.setHighlightedSquaresPreviousMove(legalMove);
   }
 
@@ -220,11 +217,12 @@ class MoveHandler {
 
     for (let i = 0; i < undoCount; i++) {
       if (this.mementos.length < 1) {
-        //this.gui.nothingLeftToUndoLogText();
+        //this.gui.nothingLeftToUndoLogText(); or maybe grey button out
         return;
       }
       this.handleSingleUndo();
     }
+    this.finalizeUndoRedo();
   }
 
   handleSingleUndo() {
@@ -238,50 +236,45 @@ class MoveHandler {
     this.move.undoMove();
     const memento = this.mementos.pop();
     this.gs.restoreFromMemento(memento);
-
-    this.gui.setHighlightedSquaresPreviousMove(this.move.getLastMove());
-    //this.gui.currentPlayerLogText(this.gs.getCurrentPlayer());
-    this.isFirstClick = true;
-
-    if (
-      this.board.isKingInCheck(
-        this.gs.getCurrentPlayer(),
-        this.move,
-        this.board
-      )
-    ) {
-      this.gui.setKingCheckHighlightedSquare(
-        this.pm.findKingSquare(this.gs.getCurrentPlayer())
-      );
-    } else {
-      this.gui.clearKingCheckHighlightedSquare(
-        this.pm.findKingSquare(this.gs.getCurrentPlayer())
-      );
-    }
   }
 
   handleRedoMove() {
-    if (this.move.undone.length < 1) {
-      //this.gui.nothingLeftToRedoLogText();
-      return;
-    }
+    const redoCount =
+      this.gs.getCurrentPlayer() === this.gs.getPlayer1() &&
+      this.gs.getPlayer2().isStockfish()
+        ? 2
+        : 1;
 
-    const redoMove = this.move.redoMove();
+    for (let i = 0; i < redoCount; i++) {
+      if (this.move.undone.length < 1) {
+        //this.gui.nothingLeftToRedoLogText(); or maybe grey button out
+        return;
+      }
+      this.handleSingleRedo();
+    }
+    this.finalizeUndoRedo();
+  }
+
+  handleSingleRedo() {
+    this.move.redoMove();
     this.mementos.push(this.gs.createMemento());
     this.isFirstClick = true;
     this.gs.swapPlayers();
-    this.handleCheckAndCheckmate();
-    return redoMove;
   }
 
-  /*
-  handleCapturedPieces(legalMove, isUndo) {}
-
-  tryAgainPrompt(logTextMethod) {
-    logTextMethod();
+  finalizeUndoRedo() {
+    this.selectedPiece = null;
     this.isFirstClick = true;
+    this.gui.clearHighlightedSquares();
+    let previousMoveToHighlight = this.move.getLastMove();
+    if (previousMoveToHighlight) {
+      this.gui.setHighlightedSquaresPreviousMove(this.move.getLastMove());
+    }
+    this.gui.updateGUI();
+    this.handleCheckAndCheckmate();
   }
-  */
+
+  //handleCapturedPieces(legalMove, isUndo) {}
 }
 
 export default MoveHandler;

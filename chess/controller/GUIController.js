@@ -23,8 +23,6 @@ class GUIController {
 
   handlePreviousMoveButtonClick() {
     this.gameController.handlePreviousMoveButtonClick();
-    this.writeCurrentFENString();
-    this.gameLogPanel.updateGameLog();
   }
 
   handleSingleUndo() {
@@ -32,10 +30,11 @@ class GUIController {
   }
 
   handleNextMoveButtonClick() {
-    const moveToHighlight = this.gameController.handleNextMoveButtonClick();
-    this.writeCurrentFENString();
-    this.gameLogPanel.updateGameLog();
-    return moveToHighlight;
+    this.gameController.handleNextMoveButtonClick();
+  }
+
+  handleSingleRedo() {
+    this.gameController.handleSingleRedo();
   }
 
   writeCurrentFENString() {

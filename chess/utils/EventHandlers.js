@@ -76,6 +76,7 @@ class EventHandlers {
         this.isDragging = true;
       }
     }
+
     if (!this.dragInitiated && this.isDragging) {
       this.guiController.handleDragStart(
         this.draggingPiece.getCurrentSquare().getRow(),

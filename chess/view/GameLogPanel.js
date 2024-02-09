@@ -75,21 +75,20 @@ class GameLogPanel {
     let currentMoveIndex = this.moveHistory.history.length - 1;
     let movesToUndoRedo = clickedIndex - currentMoveIndex;
 
-    this.gui.clearHighlightedSquares();
-
+    // Probably better way to handle this is just restoring from FEN instead of undoing/redoing x amount of moves.
     if (movesToUndoRedo < 0) {
       // Undo moves
-      for (let i = movesToUndoRedo; i < 0; i++) {
+      for (let i = movesToUndoRedo; i < -1; i++) {
         this.gui.handleSingleUndo();
       }
+      this.gui.handlePreviousMoveButtonClick();
     } else if (movesToUndoRedo > 0) {
       // Redo moves
-      for (let i = 0; i < movesToUndoRedo; i++) {
-        this.gui.handleNextMoveButtonClick();
+      for (let i = 0; i < movesToUndoRedo - 1; i++) {
+        this.gui.handleSingleRedo();
       }
+      this.gui.handleNextMoveButtonClick();
     }
-
-    this.updateGameLog();
   }
 }
 

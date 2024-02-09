@@ -111,6 +111,10 @@ class GameController {
     return this.mh.handleRedoMove();
   }
 
+  handleSingleRedo() {
+    this.mh.handleSingleRedo();
+  }
+
   generateCurrentFEN() {
     return FENGenerator.toFEN(this.board, this.move, this.gs);
   }

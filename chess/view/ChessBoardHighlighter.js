@@ -107,7 +107,6 @@ class ChessBoardHighlighter {
     if (!move) {
       return;
     }
-
     this.previousMove = move;
     const squares = [move.getStartSquare(), move.getEndSquare()];
     squares.forEach((square) => {
