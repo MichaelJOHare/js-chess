@@ -56,6 +56,7 @@ class GameLogPanel {
     let captureSymbol = move.isCapture ? "x" : "";
 
     if (!(movingPiece instanceof Pawn)) {
+      // should check if dark mode
       pieceSymbol =
         movingPiece.getPlayer().getColor() === PlayerColor.WHITE
           ? movingPiece.getWhiteChessPieceSymbol()

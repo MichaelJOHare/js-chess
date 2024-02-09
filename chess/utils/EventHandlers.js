@@ -13,7 +13,7 @@ class EventHandlers {
     this.clearHighlights = clearHighlightsCallback;
     this.clearSquareOnCanvas = clearSquareOnCanvasCallback;
     this.drawGhostPieceOnCanvas = drawGhostPieceOnCanvasCallback;
-    this.boardContainer = document.querySelector(".chessboard-wrapper");
+    this.boardContainer = document.getElementById("chessboard-container");
     this.guiController = guiController;
     this.imageLoader = imageLoader;
     this.canvas = canvas;
@@ -26,6 +26,8 @@ class EventHandlers {
     this.draggingPiece = null;
     this.startX = 0;
     this.startY = 0;
+    this.offsetX = 0;
+    this.offsetY = 0;
 
     this.draggingDiv = document.createElement("div");
     this.draggingDiv.className = "draggingDiv";
@@ -50,9 +52,16 @@ class EventHandlers {
       this.startY = event.clientY;
       const image = this.imageLoader.getPieceImage(piece);
 
+      const rect = document
+        .getElementById("chessboard-container")
+        .getBoundingClientRect();
+      this.offsetX = event.clientX - rect.left;
+      this.offsetY = event.clientY - rect.top;
+
       this.draggingDiv.innerHTML = `<img src="${image.src}" width="${this.squareSize}" height="${this.squareSize}">`;
-      this.draggingDiv.style.left = `${event.clientX - this.squareSize / 2}px`;
-      this.draggingDiv.style.top = `${event.clientY - this.squareSize / 2}px`;
+      this.draggingDiv.style.transform = `translate(${
+        this.offsetX - this.squareSize / 2
+      }px, ${this.offsetY - this.squareSize / 2}px)`;
       this.draggingDiv.style.visibility = "visible";
 
       this.draggingPiece = piece;
@@ -64,8 +73,12 @@ class EventHandlers {
 
   onMouseMove(event) {
     if (this.draggingPiece) {
-      this.draggingDiv.style.left = `${event.clientX - this.squareSize / 2}px`;
-      this.draggingDiv.style.top = `${event.clientY - this.squareSize / 2}px`;
+      const moveX = event.clientX - this.startX;
+      const moveY = event.clientY - this.startY;
+
+      this.draggingDiv.style.transform = `translate(${
+        this.offsetX + moveX - this.squareSize / 2
+      }px, ${this.offsetY + moveY - this.squareSize / 2}px)`;
 
       const diffX = Math.abs(event.clientX - this.startX);
       const diffY = Math.abs(event.clientY - this.startY);
@@ -97,6 +110,7 @@ class EventHandlers {
 
   onMouseUp(event) {
     this.clearHighlights();
+    this.draggingDiv.style.transform = "translate(0px, 0px)";
     this.draggingDiv.style.visibility = "hidden";
 
     const { row, col } = this.getSquareFromCoordinates(
