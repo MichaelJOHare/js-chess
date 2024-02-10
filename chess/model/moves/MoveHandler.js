@@ -257,6 +257,7 @@ class MoveHandler {
 
   handleSingleRedo() {
     this.move.redoMove();
+    this.pm.handlePromotion(this.move.getLastMove());
     this.mementos.push(this.gs.createMemento());
     this.isFirstClick = true;
     this.gs.swapPlayers();
@@ -270,8 +271,8 @@ class MoveHandler {
     if (previousMoveToHighlight) {
       this.gui.setHighlightedSquaresPreviousMove(this.move.getLastMove());
     }
-    this.gui.updateGUI();
     this.handleCheckAndCheckmate();
+    this.gui.updateGUI();
   }
 
   //handleCapturedPieces(legalMove, isUndo) {}

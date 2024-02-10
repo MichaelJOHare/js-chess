@@ -159,6 +159,7 @@ class ChessBoardPanel {
   }
 
   showPromotionSelector(move, callback) {
+    this.clearPreviousMoveHighlights();
     this.promotionSelector.createPromotionSelector(
       move,
       callback,
@@ -290,7 +291,7 @@ class ChessBoardPanel {
     this.boardHighlighter.isBoardFlipped = this.isBoardFlipped;
     this.eventHandlers.isBoardFlipped = this.isBoardFlipped;
     this.promotionSelector.isBoardFlipped = this.isBoardFlipped;
-    this.updatePromotionSelector();
+    this.promotionSelector.flipPromotionSelector();
     this.drawBoard();
   }
 

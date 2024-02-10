@@ -4,6 +4,7 @@ class PromotionSelector {
     this.boardContainer = boardContainer;
     this.imageLoader = imageLoader;
     this.isBoardFlipped = false;
+    this.isReversed = false;
     this.squareSize = 0;
 
     this.activePromotionSelector = null;
@@ -32,14 +33,14 @@ class PromotionSelector {
         move.getEndSquare(),
         color
       ),
-      initialFlipState: this.isBoardFlipped,
-      isReversed: false,
     };
 
-    if (
-      (this.isBoardFlipped && color === "white") ||
-      (!this.isBoardFlipped && color === "black")
-    ) {
+    if (this.isBoardFlipped && color === "white") {
+      promotionPieces = promotionPieces.reverse();
+      this.isReversed = !this.isReversed;
+    }
+
+    if (!this.isBoardFlipped && color === "black") {
       promotionPieces = promotionPieces.reverse();
     }
 
@@ -105,26 +106,14 @@ class PromotionSelector {
     this.boardContainer.appendChild(selector);
   }
 
-  updatePromotionSelector() {
+  setPositionAndSizeOfSelector() {
     const { selector, move } = this.activePromotionSelector;
     const pawnPosition = move.getEndSquare();
     const pawnRow = pawnPosition.getRow();
     const pawnCol = pawnPosition.getCol();
-    const color = move.piece.getPlayer().getColor().toLowerCase();
     const visualRow = this.isBoardFlipped ? 7 - pawnRow : pawnRow;
     const visualCol = this.isBoardFlipped ? 7 - pawnCol : pawnCol;
     const selectorHeight = this.squareSize * 4;
-
-    const currentFlipState = this.isBoardFlipped;
-    const wasFlippedSinceInitial =
-      this.activePromotionSelector.initialFlipState !== currentFlipState;
-    const needsReversalBasedOnColorAndOrientation =
-      (currentFlipState && color === "white") ||
-      (!currentFlipState && color === "black");
-
-    const shouldReverse =
-      wasFlippedSinceInitial !== this.activePromotionSelector.isReversed &&
-      needsReversalBasedOnColorAndOrientation;
 
     if (this.isBoardFlipped) {
       if (visualRow === 7) {
@@ -144,15 +133,6 @@ class PromotionSelector {
       }
     }
 
-    if (shouldReverse) {
-      const childrenArray = Array.from(selector.children);
-      childrenArray.reverse().forEach((child) => {
-        selector.appendChild(child);
-      });
-      this.activePromotionSelector.isReversed =
-        !this.activePromotionSelector.isReversed;
-    }
-
     selector.style.left = `${visualCol * this.squareSize}px`;
     selector.style.width = `${this.squareSize}px`;
     selector.style.height = `${selectorHeight}px`;
@@ -162,13 +142,39 @@ class PromotionSelector {
     });
   }
 
+  updatePromotionSelector() {
+    if (this.activePromotionSelector) {
+      this.setPositionAndSizeOfSelector();
+    }
+  }
+
+  flipPromotionSelector() {
+    if (this.activePromotionSelector) {
+      this.setPositionAndSizeOfSelector();
+      const { selector, move } = this.activePromotionSelector;
+      const color = move.piece.getPlayer().getColor().toLowerCase();
+      const shouldReverse =
+        (this.isBoardFlipped && color === "white" && !this.isReversed) ||
+        (!this.isBoardFlipped && color === "black" && this.isReversed) ||
+        (!this.isBoardFlipped && color === "white" && this.isReversed) ||
+        (this.isBoardFlipped && color === "black" && !this.isReversed);
+
+      if (shouldReverse) {
+        const childrenArray = Array.from(selector.children);
+        childrenArray.reverse().forEach((child) => selector.appendChild(child));
+        this.isReversed = !this.isReversed;
+      }
+    }
+  }
+
   calculateSelectorSquares(endSquare, color) {
     const squares = [];
-    const startRow =
-      color === "white" ? endSquare.getRow() : endSquare.getRow() - 3;
+    let startRow = 0;
+
+    startRow = color === "white" ? endSquare.getRow() : endSquare.getRow() - 3;
 
     for (let i = 0; i < 4; i++) {
-      const row = startRow + (color === "white" ? i : -i);
+      const row = startRow + i;
       const col = endSquare.getCol();
       squares.push({ row, col });
     }

@@ -62,6 +62,13 @@ class PromotionMove extends Move {
       this.board.addPiece(this.capturedPiece);
     }
   }
+
+  redo() {
+    this.board.removePiece(this.originalPiece);
+    this.piece = this.promotedPiece;
+    this.board.addPiece(this.promotedPiece);
+    this.promotedPiece.setCurrentSquare(this.endSquare);
+  }
 }
 
 export default PromotionMove;

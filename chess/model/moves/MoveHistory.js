@@ -39,7 +39,7 @@ class MoveHistory {
     if (this.undone.length > 0) {
       const redoMove = this.undone.pop();
       this.resetHasMovedFlagForRedo(redoMove);
-      redoMove.execute();
+      redoMove.redo();
       this.history.push(redoMove);
     }
   }
