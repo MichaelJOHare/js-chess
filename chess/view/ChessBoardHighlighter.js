@@ -9,6 +9,7 @@ class ChessBoardHighlighter {
     this.offscreenCtx = offscreenCtx;
     this.imageLoader = imageLoader;
 
+    this.isBoardFlipped = false;
     this.squareSize = 0;
     this.kingCheckHighlightedSquare = null;
     this.listOfMovesToHighlight = [];
@@ -18,8 +19,8 @@ class ChessBoardHighlighter {
   }
 
   drawRankFileLabels(row, col) {
-    const rowLabels = "87654321";
-    const colLabels = "abcdefgh";
+    const rowLabels = this.isBoardFlipped ? "12345678" : "87654321";
+    const colLabels = this.isBoardFlipped ? "hgfedcba" : "abcdefgh";
     const fontSize = this.squareSize / 6;
     this.offscreenCtx.font = `bold ${fontSize}px Roboto`;
     this.offscreenCtx.textBaseline = "top";
@@ -56,50 +57,56 @@ class ChessBoardHighlighter {
     this.listOfMovesToHighlight = moves;
     this.highlightedSquares = [];
 
-    const startSquare = moves[0].getStartSquare();
-    this.highlightedSquares.push(startSquare);
-
-    this.clearSquareOnOffscreenCanvas(
-      startSquare.getRow(),
-      startSquare.getCol()
-    );
-    this.drawSelectedPieceHighlightedSquares(
-      startSquare.getRow(),
-      startSquare.getCol()
-    );
-    this.drawPieceOnOffscreenCanvas(
-      this.board.getPieceAt(startSquare.getRow(), startSquare.getCol()),
-      startSquare.getCol() * this.squareSize,
-      startSquare.getRow() * this.squareSize
-    );
-
     moves.forEach((move) => {
+      const startSquare = move.getStartSquare();
       const endSquare = move.getEndSquare();
-      this.highlightedSquares.push(endSquare);
-      const row = endSquare.getRow();
-      const col = endSquare.getCol();
 
+      const startRow = this.isBoardFlipped
+        ? 7 - startSquare.getRow()
+        : startSquare.getRow();
+      const startCol = this.isBoardFlipped
+        ? 7 - startSquare.getCol()
+        : startSquare.getCol();
+      const endRow = this.isBoardFlipped
+        ? 7 - endSquare.getRow()
+        : endSquare.getRow();
+      const endCol = this.isBoardFlipped
+        ? 7 - endSquare.getCol()
+        : endSquare.getCol();
+
+      this.highlightedSquares.push({ row: startRow, col: startCol });
+      this.clearSquareOnOffscreenCanvas(startRow, startCol);
+      this.drawSelectedPieceHighlightedSquares(startRow, startCol);
+      this.drawPieceOnOffscreenCanvas(
+        this.board.getPieceAt(startSquare.getRow(), startSquare.getCol()),
+        startCol * this.squareSize,
+        startRow * this.squareSize
+      );
+
+      this.highlightedSquares.push({ row: endRow, col: endCol });
       let highlightColor =
-        (row + col) % 2 === 0
+        (endRow + endCol) % 2 === 0
           ? ChessBoardPanel.LIGHT_SQUARE_HIGHLIGHT_COLOR
           : ChessBoardPanel.DARK_SQUARE_HIGHLIGHT_COLOR;
 
       if (
         this.board.isOccupiedByOpponent(
-          row,
-          col,
+          endSquare.getRow(),
+          endSquare.getCol(),
           move.getPiece().getPlayer()
         ) ||
         move instanceof EnPassantMove
       ) {
-        this.drawCornerHighlights(row, col);
+        this.drawCornerHighlights(endRow, endCol);
       } else {
-        this.drawDotHighlight(row, col, highlightColor);
+        this.drawDotHighlight(endRow, endCol, highlightColor);
       }
-      if (row === 7 || col === 7) {
-        this.drawRankFileLabels(row, col);
+
+      if (endRow === 7 || endCol === 7) {
+        this.drawRankFileLabels(endRow, endCol);
       }
     });
+
     this.ctx.drawImage(this.offscreenCanvas, 0, 0);
   }
 
@@ -108,12 +115,13 @@ class ChessBoardHighlighter {
       return;
     }
     this.previousMove = move;
+
     const squares = [move.getStartSquare(), move.getEndSquare()];
     squares.forEach((square) => {
-      this.previousMoveHighlightedSquares.push(square);
-      const row = square.getRow();
-      const col = square.getCol();
+      const row = this.isBoardFlipped ? 7 - square.getRow() : square.getRow();
+      const col = this.isBoardFlipped ? 7 - square.getCol() : square.getCol();
 
+      this.previousMoveHighlightedSquares.push({ row, col });
       this.offscreenCtx.fillStyle =
         (row + col) % 2 === 0
           ? ChessBoardPanel.LIGHT_SQUARE_PREVIOUS_MOVE
@@ -125,15 +133,25 @@ class ChessBoardHighlighter {
         this.squareSize,
         this.squareSize
       );
+
       if (row === 7 || col === 7) {
         this.drawRankFileLabels(row, col);
       }
     });
+
+    const endRow = this.isBoardFlipped
+      ? 7 - move.getEndSquare().getRow()
+      : move.getEndSquare().getRow();
+    const endCol = this.isBoardFlipped
+      ? 7 - move.getEndSquare().getCol()
+      : move.getEndSquare().getCol();
+
     this.drawPieceOnOffscreenCanvas(
       move.getPiece(),
-      move.getEndSquare().getCol() * this.squareSize,
-      move.getEndSquare().getRow() * this.squareSize
+      endCol * this.squareSize,
+      endRow * this.squareSize
     );
+
     this.ctx.drawImage(this.offscreenCanvas, 0, 0);
   }
 
@@ -202,7 +220,9 @@ class ChessBoardHighlighter {
     this.offscreenCtx.fill();
     this.offscreenCtx.restore();
 
-    const piece = this.board.getPieceAt(row, col);
+    const endRow = this.isBoardFlipped ? 7 - row : row;
+    const endCol = this.isBoardFlipped ? 7 - col : col;
+    const piece = this.board.getPieceAt(endRow, endCol);
     if (piece) {
       this.drawPieceOnOffscreenCanvas(
         piece,
@@ -212,11 +232,16 @@ class ChessBoardHighlighter {
     }
   }
 
-  drawKingCheckHighlight(row, col) {
+  drawKingCheckHighlight() {
+    let row = this.kingCheckHighlightedSquare.row;
+    let col = this.kingCheckHighlightedSquare.col;
+
+    const visualRow = this.isBoardFlipped ? 7 - row : row;
+    const visualCol = this.isBoardFlipped ? 7 - col : col;
     this.clearSquareOnOffscreenCanvas(row, col);
 
-    const centerX = (col + 0.5) * this.squareSize;
-    const centerY = (row + 0.5) * this.squareSize;
+    const centerX = (visualCol + 0.5) * this.squareSize;
+    const centerY = (visualRow + 0.5) * this.squareSize;
     const innerRadius = 0;
     const outerRadius = this.squareSize * 0.9;
 
@@ -237,8 +262,8 @@ class ChessBoardHighlighter {
     this.offscreenCtx.fillStyle = gradient;
 
     this.offscreenCtx.fillRect(
-      col * this.squareSize,
-      row * this.squareSize,
+      visualCol * this.squareSize,
+      visualRow * this.squareSize,
       this.squareSize,
       this.squareSize
     );
@@ -247,8 +272,8 @@ class ChessBoardHighlighter {
     if (piece) {
       this.drawPieceOnOffscreenCanvas(
         piece,
-        col * this.squareSize,
-        row * this.squareSize
+        visualCol * this.squareSize,
+        visualRow * this.squareSize
       );
     }
     if (row === 7 || col === 7) {
@@ -260,7 +285,7 @@ class ChessBoardHighlighter {
 
   clearHighlights() {
     this.highlightedSquares.forEach((square) => {
-      this.redrawSquare(square.getRow(), square.getCol());
+      this.redrawSquare(square.row, square.col);
     });
     this.highlightedSquares = [];
     this.listOfMovesToHighlight = [];
@@ -268,7 +293,7 @@ class ChessBoardHighlighter {
 
   clearPreviousMoveHighlights() {
     this.previousMoveHighlightedSquares.forEach((square) => {
-      this.redrawSquare(square.getRow(), square.getCol());
+      this.redrawSquare(square.row, square.col);
     });
     this.previousMoveHighlightedSquares = [];
     this.previousMove = null;

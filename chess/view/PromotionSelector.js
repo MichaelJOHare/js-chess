@@ -3,6 +3,7 @@ class PromotionSelector {
     this.drawBoard = drawBoardCallback;
     this.boardContainer = boardContainer;
     this.imageLoader = imageLoader;
+    this.isBoardFlipped = false;
     this.squareSize = 0;
 
     this.activePromotionSelector = null;
@@ -13,6 +14,8 @@ class PromotionSelector {
     const pawnPosition = move.getEndSquare();
     const pawnRow = pawnPosition.getRow();
     const pawnCol = pawnPosition.getCol();
+    const visualRow = this.isBoardFlipped ? 7 - pawnRow : pawnRow;
+    const visualCol = this.isBoardFlipped ? 7 - pawnCol : pawnCol;
     const color = move.piece.getPlayer().getColor().toLowerCase();
     const colorCapitalized = color.charAt(0).toUpperCase() + color.slice(1);
     const selector = document.createElement("div");
@@ -29,19 +32,36 @@ class PromotionSelector {
         move.getEndSquare(),
         color
       ),
+      initialFlipState: this.isBoardFlipped,
+      isReversed: false,
     };
 
-    if (color === "black") {
+    if (
+      (this.isBoardFlipped && color === "white") ||
+      (!this.isBoardFlipped && color === "black")
+    ) {
       promotionPieces = promotionPieces.reverse();
     }
 
-    if (pawnRow === 0) {
-      selector.style.top = `${pawnRow * squareSize}px`;
-    } else if (pawnRow === 7) {
-      selector.style.top = `${(pawnRow + 1) * squareSize - selectorHeight}px`;
+    if (this.isBoardFlipped) {
+      if (visualRow === 7) {
+        selector.style.top = `${
+          (visualRow + 1) * this.squareSize - selectorHeight
+        }px`;
+      } else {
+        selector.style.top = `${visualRow * this.squareSize}px`;
+      }
+    } else {
+      if (visualRow === 0) {
+        selector.style.top = `${visualRow * this.squareSize}px`;
+      } else {
+        selector.style.top = `${
+          (visualRow + 1) * this.squareSize - selectorHeight
+        }px`;
+      }
     }
-    selector.style.left = `${pawnCol * squareSize}px`;
 
+    selector.style.left = `${visualCol * squareSize}px`;
     selector.style.width = `${squareSize}px`;
     selector.style.height = `${squareSize * promotionPieces.length}px`;
     selector.style.zIndex = "3";
@@ -83,6 +103,63 @@ class PromotionSelector {
     });
 
     this.boardContainer.appendChild(selector);
+  }
+
+  updatePromotionSelector() {
+    const { selector, move } = this.activePromotionSelector;
+    const pawnPosition = move.getEndSquare();
+    const pawnRow = pawnPosition.getRow();
+    const pawnCol = pawnPosition.getCol();
+    const color = move.piece.getPlayer().getColor().toLowerCase();
+    const visualRow = this.isBoardFlipped ? 7 - pawnRow : pawnRow;
+    const visualCol = this.isBoardFlipped ? 7 - pawnCol : pawnCol;
+    const selectorHeight = this.squareSize * 4;
+
+    const currentFlipState = this.isBoardFlipped;
+    const wasFlippedSinceInitial =
+      this.activePromotionSelector.initialFlipState !== currentFlipState;
+    const needsReversalBasedOnColorAndOrientation =
+      (currentFlipState && color === "white") ||
+      (!currentFlipState && color === "black");
+
+    const shouldReverse =
+      wasFlippedSinceInitial !== this.activePromotionSelector.isReversed &&
+      needsReversalBasedOnColorAndOrientation;
+
+    if (this.isBoardFlipped) {
+      if (visualRow === 7) {
+        selector.style.top = `${
+          (visualRow + 1) * this.squareSize - selectorHeight
+        }px`;
+      } else {
+        selector.style.top = `${visualRow * this.squareSize}px`;
+      }
+    } else {
+      if (visualRow === 0) {
+        selector.style.top = `${visualRow * this.squareSize}px`;
+      } else {
+        selector.style.top = `${
+          (visualRow + 1) * this.squareSize - selectorHeight
+        }px`;
+      }
+    }
+
+    if (shouldReverse) {
+      const childrenArray = Array.from(selector.children);
+      childrenArray.reverse().forEach((child) => {
+        selector.appendChild(child);
+      });
+      this.activePromotionSelector.isReversed =
+        !this.activePromotionSelector.isReversed;
+    }
+
+    selector.style.left = `${visualCol * this.squareSize}px`;
+    selector.style.width = `${this.squareSize}px`;
+    selector.style.height = `${selectorHeight}px`;
+
+    Array.from(selector.children).forEach((img) => {
+      img.style.height = `${this.squareSize}px`;
+    });
   }
 
   calculateSelectorSquares(endSquare, color) {

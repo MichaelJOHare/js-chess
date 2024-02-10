@@ -75,6 +75,15 @@ body {
   justify-content: space-between;
 }
 
+#flip-fen-import {
+  display: flex;
+  flex-direction: column;
+}
+
+#flip-board {
+  margin-bottom: 10px;
+}
+
 #move-history {
   display: flex;
   flex-wrap: wrap;

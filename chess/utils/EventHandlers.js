@@ -1,4 +1,5 @@
 import ChessBoardPanel from "../view/ChessBoardPanel.js";
+import ChessBoard from "../model/board/ChessBoard.js";
 
 class EventHandlers {
   constructor(
@@ -19,6 +20,7 @@ class EventHandlers {
     this.canvas = canvas;
     this.board = board;
 
+    this.isBoardFlipped = false;
     this.squareSize = 0;
     this.dragInitiated = false;
     this.isDragging = false;
@@ -91,18 +93,22 @@ class EventHandlers {
     }
 
     if (!this.dragInitiated && this.isDragging) {
+      let row = this.isBoardFlipped
+        ? 7 - this.originalSquare.row
+        : this.originalSquare.row;
+      let col = this.isBoardFlipped
+        ? 7 - this.originalSquare.col
+        : this.originalSquare.col;
+
       this.guiController.handleDragStart(
         this.draggingPiece.getCurrentSquare().getRow(),
         this.draggingPiece.getCurrentSquare().getCol()
       );
-      this.clearSquareOnCanvas(
-        this.originalSquare.col,
-        this.originalSquare.row
-      );
+      this.clearSquareOnCanvas(col, row);
       this.drawGhostPieceOnCanvas(
         this.draggingPiece,
-        this.originalSquare.col * this.squareSize,
-        this.originalSquare.row * this.squareSize
+        col * this.squareSize,
+        row * this.squareSize
       );
       this.dragInitiated = true;
     }
@@ -133,8 +139,15 @@ class EventHandlers {
     const rect = this.canvas.getBoundingClientRect();
     const relX = x - rect.left;
     const relY = y - rect.top;
-    const col = Math.floor(relX / this.squareSize);
-    const row = Math.floor(relY / this.squareSize);
+
+    let col = Math.floor(relX / this.squareSize);
+    let row = Math.floor(relY / this.squareSize);
+
+    if (this.isBoardFlipped) {
+      col = ChessBoard.COLUMN_LENGTH - 1 - col;
+      row = ChessBoard.ROW_LENGTH - 1 - row;
+    }
+
     return { row, col };
   }
 

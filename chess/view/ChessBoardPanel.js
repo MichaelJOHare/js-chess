@@ -34,6 +34,7 @@ class ChessBoardPanel {
       this.imageLoader
     );
 
+    this.isBoardFlipped = false;
     this.squareSize = 0;
     this.setScreen = this.setScreen.bind(this);
 
@@ -66,18 +67,21 @@ class ChessBoardPanel {
   drawBoard() {
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
+        const drawRow = this.isBoardFlipped ? 7 - row : row;
+        const drawCol = this.isBoardFlipped ? 7 - col : col;
+
         this.offscreenCtx.fillStyle =
-          (row + col) % 2 === 0
+          (drawRow + drawCol) % 2 === 0
             ? ChessBoardPanel.LIGHT_SQUARE_COLOR
             : ChessBoardPanel.DARK_SQUARE_COLOR;
         this.offscreenCtx.fillRect(
-          col * this.squareSize,
-          row * this.squareSize,
+          drawCol * this.squareSize,
+          drawRow * this.squareSize,
           this.squareSize,
           this.squareSize
         );
-        if (row === 7 || col === 7) {
-          this.boardHighlighter.drawRankFileLabels(row, col);
+        if (drawRow === 7 || drawCol === 7) {
+          this.boardHighlighter.drawRankFileLabels(drawRow, drawCol);
         }
       }
     }
@@ -96,10 +100,7 @@ class ChessBoardPanel {
       );
     }
     if (this.boardHighlighter.kingCheckHighlightedSquare) {
-      this.boardHighlighter.drawKingCheckHighlight(
-        this.boardHighlighter.kingCheckHighlightedSquare.row,
-        this.boardHighlighter.kingCheckHighlightedSquare.col
-      );
+      this.boardHighlighter.drawKingCheckHighlight();
     }
   }
 
@@ -110,10 +111,13 @@ class ChessBoardPanel {
         if (piece && !this.shouldSkipDrawingPiece(row, col)) {
           const image = this.imageLoader.getPieceImage(piece);
           if (image) {
+            const drawRow = this.isBoardFlipped ? 7 - row : row;
+            const drawCol = this.isBoardFlipped ? 7 - col : col;
+
             this.offscreenCtx.drawImage(
               image,
-              col * this.squareSize,
-              row * this.squareSize,
+              drawCol * this.squareSize,
+              drawRow * this.squareSize,
               this.squareSize * 0.96,
               this.squareSize * 0.96
             );
@@ -185,7 +189,9 @@ class ChessBoardPanel {
   }
 
   clearKingCheckHighlightedSquare(square) {
-    this.boardHighlighter.redrawSquare(square.getRow(), square.getCol());
+    const row = this.isBoardFlipped ? 7 - square.getRow() : square.getRow();
+    const col = this.isBoardFlipped ? 7 - square.getCol() : square.getCol();
+    this.boardHighlighter.redrawSquare(row, col);
     this.boardHighlighter.kingCheckHighlightedSquare = null;
   }
 
@@ -219,25 +225,14 @@ class ChessBoardPanel {
     this.offscreenCanvas.width = size;
     this.offscreenCanvas.height = size;
 
+    this.updateSquareSize();
     this.reorderSidebarBasedOnScreenWidth();
     this.updatePromotionSelector();
-    this.updateSquareSize();
   }
 
   updatePromotionSelector() {
     if (this.promotionSelector.activePromotionSelector) {
-      const { selector, move } = this.promotionSelector.activePromotionSelector;
-      const pawnPosition = move.getEndSquare();
-      const pawnRow = pawnPosition.getRow();
-      const pawnCol = pawnPosition.getCol();
-
-      selector.style.top = `${pawnRow * this.squareSize}px`;
-      selector.style.left = `${pawnCol * this.squareSize}px`;
-      selector.style.width = `${this.squareSize}px`;
-      selector.style.height = `${this.squareSize * 4}px`;
-      Array.from(selector.children).forEach((img) => {
-        img.style.height = `${this.squareSize}px`;
-      });
+      this.promotionSelector.updatePromotionSelector();
     }
   }
 
@@ -290,6 +285,15 @@ class ChessBoardPanel {
     }
   }
 
+  toggleBoardFlip() {
+    this.isBoardFlipped = !this.isBoardFlipped;
+    this.boardHighlighter.isBoardFlipped = this.isBoardFlipped;
+    this.eventHandlers.isBoardFlipped = this.isBoardFlipped;
+    this.promotionSelector.isBoardFlipped = this.isBoardFlipped;
+    this.updatePromotionSelector();
+    this.drawBoard();
+  }
+
   setupEventListeners() {
     this.canvas.addEventListener(
       "mousedown",
@@ -307,6 +311,7 @@ class ChessBoardPanel {
     const previousMoveButton = document.getElementById("prev-move");
     const nextMoveButton = document.getElementById("next-move");
     const importFromFENButton = document.getElementById("import-from-fen");
+    const flipBoardButton = document.getElementById("flip-board");
     const submitFENButton = document.getElementById("submit-fen");
 
     previousMoveButton.addEventListener("click", () => {
@@ -317,6 +322,9 @@ class ChessBoardPanel {
     });
     importFromFENButton.addEventListener("click", () => {
       this.onImportFromFENButtonClick();
+    });
+    flipBoardButton.addEventListener("click", () => {
+      this.toggleBoardFlip();
     });
     submitFENButton.addEventListener("click", () => {
       this.onSubmitFENButtonClick();
