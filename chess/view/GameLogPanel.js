@@ -66,8 +66,10 @@ class GameLogPanel {
     let movingPiece = move.piece;
     let pieceSymbol = "";
     let endSquare = move.endSquare;
-    // Need to figure out if two of the same player's knight/rook could've captured or moved from same file or rank ->
-    //            include rank if on same file, file if on same rank for disambiguation
+    // FOR DISAMBIGUATION:
+    // Need to figure out if two of the same player's knight/rook (and bishop/queen after promotion)
+    //      could've captured, or moved to, same square ->
+    //                       include rank or file, or both if on same file/rank
     let captureSymbol = move.isCapture ? "x" : "";
 
     if (move instanceof CastlingMove) {

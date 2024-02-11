@@ -59,7 +59,8 @@ class ChessBoardPanel {
       this.guiController,
       this.imageLoader,
       this.canvas,
-      this.board
+      this.board,
+      this.boardHighlighter
     );
     this.setupEventListeners();
   }
@@ -312,6 +313,9 @@ class ChessBoardPanel {
       "mouseup",
       this.eventHandlers.onMouseUp.bind(this.eventHandlers)
     );
+    this.canvas.addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+    });
 
     const previousMoveButton = document.getElementById("prev-move");
     const nextMoveButton = document.getElementById("next-move");
@@ -340,10 +344,9 @@ class ChessBoardPanel {
     });
 
     if (screen.orientation) {
-      screen.orientation.addEventListener("change", () => {
-        this.setScreen().bind(this);
-      });
+      screen.orientation.addEventListener("change", this.setScreen.bind(this));
     }
+
     window.addEventListener("resize", this.debounce(this.setScreen, 50));
   }
 

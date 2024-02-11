@@ -40,6 +40,10 @@ body {
   z-index: 1;
 }
 
+#chessSVG {
+  pointer-events: none;
+}
+
 .draggingDiv {
   user-select: none;
   -moz-user-select: none;

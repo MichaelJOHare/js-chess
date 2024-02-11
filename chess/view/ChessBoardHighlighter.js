@@ -7,6 +7,7 @@ class ChessBoardHighlighter {
     this.ctx = ctx;
     this.offscreenCanvas = offscreenCanvas;
     this.offscreenCtx = offscreenCtx;
+    this.svg = document.getElementById("chessSVG");
     this.imageLoader = imageLoader;
 
     this.isBoardFlipped = false;
@@ -283,6 +284,50 @@ class ChessBoardHighlighter {
     this.kingCheckHighlightedSquare = { row, col };
   }
 
+  drawPieceOnOffscreenCanvas(piece, x, y) {
+    const image = this.imageLoader.getPieceImage(piece);
+    if (image) {
+      this.offscreenCtx.drawImage(
+        image,
+        x,
+        y,
+        this.squareSize * 0.96,
+        this.squareSize * 0.96
+      );
+    }
+  }
+
+  drawCircle(x, y) {
+    const ns = "http://www.w3.org/2000/svg";
+    let circle = document.createElementNS(ns, "circle");
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", this.squareSize / 4);
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", "green");
+    circle.setAttribute("stroke-width", 2);
+    this.svg.appendChild(circle);
+  }
+
+  drawArrow(x1, y1, x2, y2) {
+    const ns = "http://www.w3.org/2000/svg";
+    let arrow = document.createElementNS(ns, "line");
+    arrow.setAttribute("x1", x1);
+    arrow.setAttribute("y1", y1);
+    arrow.setAttribute("x2", x2);
+    arrow.setAttribute("y2", y2);
+    arrow.setAttribute("stroke", "blue");
+    arrow.setAttribute("stroke-width", 4);
+    arrow.setAttribute("marker-end", "url(#arrowhead)");
+    this.svg.appendChild(arrow);
+  }
+
+  clearSVG() {
+    while (this.svg.firstChild) {
+      this.svg.removeChild(this.svg.firstChild);
+    }
+  }
+
   clearHighlights() {
     this.highlightedSquares.forEach((square) => {
       this.redrawSquare(square.row, square.col);
@@ -297,19 +342,6 @@ class ChessBoardHighlighter {
     });
     this.previousMoveHighlightedSquares = [];
     this.previousMove = null;
-  }
-
-  drawPieceOnOffscreenCanvas(piece, x, y) {
-    const image = this.imageLoader.getPieceImage(piece);
-    if (image) {
-      this.offscreenCtx.drawImage(
-        image,
-        x,
-        y,
-        this.squareSize * 0.96,
-        this.squareSize * 0.96
-      );
-    }
   }
 
   clearSquareOnOffscreenCanvas(row, col) {
