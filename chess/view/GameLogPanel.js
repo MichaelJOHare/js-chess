@@ -76,7 +76,6 @@ class GameLogPanel {
     let currentMoveIndex = this.moveHistory.history.length - 1;
     let movesToUndoRedo = clickedIndex - currentMoveIndex;
 
-    // Probably better way to handle this is just restoring from FEN instead of undoing/redoing x amount of moves.
     if (movesToUndoRedo < 0) {
       // Undo moves
       for (let i = movesToUndoRedo; i < -1; i++) {

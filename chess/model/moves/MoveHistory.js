@@ -38,6 +38,7 @@ class MoveHistory {
   redoMove() {
     if (this.undone.length > 0) {
       const redoMove = this.undone.pop();
+      this.resetMoveClocksForRedo(redoMove);
       this.resetHasMovedFlagForRedo(redoMove);
       redoMove.redo();
       this.history.push(redoMove);
@@ -87,6 +88,21 @@ class MoveHistory {
 
     if (lastMove.getPiece().getPlayer().getColor() === PlayerColor.BLACK) {
       this.fullMoveNumber--;
+    }
+  }
+
+  resetMoveClocksForRedo(redoMove) {
+    if (
+      redoMove.getPiece().getType() === PieceType.PAWN ||
+      redoMove.isCapture
+    ) {
+      this.halfMoveClock = 0;
+    } else {
+      this.halfMoveClock++;
+    }
+
+    if (redoMove.getPiece().getPlayer().getColor() === PlayerColor.BLACK) {
+      this.fullMoveNumber++;
     }
   }
 
