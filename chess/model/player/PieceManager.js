@@ -62,7 +62,7 @@ class PieceManager {
   }
 
   handleUndoPromotion(move) {
-    if (move.isPromotion) {
+    if (move && move.isPromotion) {
       this.removePiece(move.getPromotedPiece());
       this.addPiece(move.getOriginalPiece());
     }

@@ -5,8 +5,7 @@ console.log("GameController initialized", gameController);
 
 /*
 TO DO
- - Separate out reversing promotion selector from update promotion selector
-      so it can be independently toggled with flip board as I can't make it work currently
+ - Refactor promotion selector, lots of repeated code
 
  - Debug possible memory leak
     - Relatively confident slow leak is from dark reader, live server, or a combination of both.

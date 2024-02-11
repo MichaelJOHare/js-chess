@@ -44,6 +44,7 @@ class GameController {
 
     this.guiController.clearHighlightedSquares();
     this.pm = this.board.getPieceManager();
+    this.mementos = [];
     this.mh = new MoveHandler(
       this.board,
       this.move,
@@ -54,7 +55,6 @@ class GameController {
     );
     this.gs.setGameOver(false);
     this.move.resetMoveHistory();
-    this.mementos = [];
 
     this.move.halfMoveClock = boardContext.halfMoveClock;
     this.move.fullMoveNumber = boardContext.fullMoveNumber;
@@ -126,20 +126,23 @@ class GameController {
   makeStockfishMove() {
     this.sfController.makeMove();
   }
+  */
 
-  handlePlayAgainButtonClick() {
-    this.guiController.clearPreviousMoveHighlightedSquares();
+  handleResetBoard() {
+    this.guiController.clearHighlightedSquares();
     this.gs.init();
     this.board.init(this.gs.getPlayer1(), this.gs.getPlayer2());
     this.pm = this.board.getPieceManager();
-    this.mh.setFirstClick(true);
+    this.mh.isFirstClick = true;
     this.gs.setGameOver(false);
     this.move.resetMoveHistory();
     this.mementos = [];
+    this.mh.mementos = [];
     this.guiController.updateGUI();
     this.initiateGame();
   }
 
+  /*
   cleanup() {
     this.sfController.cleanup();
   }

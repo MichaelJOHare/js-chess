@@ -77,6 +77,10 @@ class GUIController {
     this.gameLogPanel.updateGameLog();
     this.chessBoardPanel.drawBoard();
   }
+
+  handleResetBoard() {
+    this.gameController.handleResetBoard();
+  }
 }
 
 export default GUIController;

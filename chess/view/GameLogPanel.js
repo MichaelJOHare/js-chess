@@ -1,26 +1,33 @@
 import Pawn from "../model/pieces/Pawn.js";
 import PlayerColor from "../model/player/PlayerColor.js";
+import CastlingMove from "../model/moves/CastlingMove.js";
 
 class GameLogPanel {
   constructor(moveHistory, guiController) {
     this.moveHistory = moveHistory;
     this.gui = guiController;
+    this.currentMoveIndex = 0;
 
     this.gameLog = document.getElementById("move-history");
   }
 
   updateGameLog() {
+    this.currentMoveIndex = this.moveHistory.history.length - 1;
     this.clearGameLog();
     this.writeToGameLog();
+    this.highlightCurrentMove();
   }
 
   writeToGameLog() {
     let pastMoves = this.moveHistory.history;
+    let undoneMoves = this.moveHistory.undone.slice().reverse();
+    let allMoves = pastMoves.concat(undoneMoves);
     let currentMoveDiv;
 
-    pastMoves.forEach((move, index) => {
+    allMoves.forEach((move, index) => {
       let moveNotation = this.createGameLogObject(move);
       let moveId = "move-" + index;
+      let isUndone = index >= this.moveHistory.history.length;
 
       if (index % 2 === 0) {
         currentMoveDiv = document.createElement("div");
@@ -39,8 +46,16 @@ class GameLogPanel {
       moveSpan.innerHTML = moveNotation;
       moveSpan.addEventListener("click", () => this.onClick(index));
 
+      if (index === this.currentMoveIndex && !isUndone) {
+        moveSpan.classList.add("current-move-highlight");
+      }
+
       currentMoveDiv.appendChild(moveSpan);
     });
+
+    if (this.currentMoveIndex !== -1) {
+      this.highlightCurrentMove();
+    }
   }
 
   clearGameLog() {
@@ -54,6 +69,17 @@ class GameLogPanel {
     // Need to figure out if two of the same player's knight/rook could've captured or moved from same file or rank ->
     //            include rank if on same file, file if on same rank for disambiguation
     let captureSymbol = move.isCapture ? "x" : "";
+
+    if (move instanceof CastlingMove) {
+      if (
+        Math.abs(move.rookStartSquare.getCol() - move.rookEndSquare.getCol()) >
+        2
+      ) {
+        return "O-O-O";
+      } else {
+        return "O-O";
+      }
+    }
 
     if (!(movingPiece instanceof Pawn)) {
       // should check if dark mode
@@ -71,8 +97,20 @@ class GameLogPanel {
     return gameLogObject;
   }
 
+  highlightCurrentMove() {
+    document.querySelectorAll(".current-move-highlight").forEach((elem) => {
+      elem.classList.remove("current-move-highlight");
+    });
+
+    const currentMoveElem = document.getElementById(
+      `move-${this.currentMoveIndex}`
+    );
+    if (currentMoveElem) {
+      currentMoveElem.classList.add("current-move-highlight");
+    }
+  }
+
   onClick(clickedIndex) {
-    // create id="current-move" for currentMove to highlight it in css
     let currentMoveIndex = this.moveHistory.history.length - 1;
     let movesToUndoRedo = clickedIndex - currentMoveIndex;
 
@@ -89,6 +127,8 @@ class GameLogPanel {
       }
       this.gui.handleNextMoveButtonClick();
     }
+    this.currentMoveIndex = clickedIndex;
+    this.highlightCurrentMove();
   }
 }
 

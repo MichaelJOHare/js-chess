@@ -80,8 +80,18 @@ body {
   flex-direction: column;
 }
 
+#flip-board,
+#import-from-fen,
+#reset-board {
+  cursor: pointer;
+}
+
 #flip-board {
   margin-bottom: 10px;
+}
+
+#reset-board {
+  margin-top: 10px;
 }
 
 #move-history {
@@ -93,6 +103,12 @@ body {
   border: 1px solid #ccc;
   margin-bottom: 10px;
   overflow-y: auto;
+}
+
+.current-move-highlight {
+  background: #2c5070;
+  color: #e3e3e3;
+  outline: 1px solid #306698;
 }
 
 #move-history-title {
@@ -113,6 +129,16 @@ body {
 #prev-move,
 #next-move {
   cursor: pointer;
+  flex-grow: 1;
+  font-size: 20px;
+}
+
+#prev-move {
+  margin-right: 10px;
+}
+
+#next-move {
+  margin-left: 10px;
 }
 
 #text-areas-container {

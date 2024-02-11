@@ -16,8 +16,8 @@ class GameState {
   initializePlayers() {
     //const setup = GameSetup.getPlayerSetup();
 
-    this.player1 = new Player(PlayerColor.WHITE, PlayerType.HUMAN, "Mike"); //setup.getPlayer1();
-    this.player2 = new Player(PlayerColor.BLACK, PlayerType.HUMAN, "Bob"); //setup.getPlayer2();
+    this.player1 = new Player(PlayerColor.WHITE, PlayerType.HUMAN, "White"); //setup.getPlayer1();
+    this.player2 = new Player(PlayerColor.BLACK, PlayerType.HUMAN, "Black"); //setup.getPlayer2();
 
     /*
     if (setup.isStockfishInPlay()) {

@@ -266,6 +266,10 @@ class ChessBoardPanel {
     this.toggleFENInput();
   }
 
+  onResetBoardButtonClick() {
+    this.guiController.handleResetBoard();
+  }
+
   writeCurrentFENString(fenString) {
     const fenBox = document.getElementById("fen-box");
     fenBox.value = fenString;
@@ -313,6 +317,7 @@ class ChessBoardPanel {
     const nextMoveButton = document.getElementById("next-move");
     const importFromFENButton = document.getElementById("import-from-fen");
     const flipBoardButton = document.getElementById("flip-board");
+    const resetBoardButton = document.getElementById("reset-board");
     const submitFENButton = document.getElementById("submit-fen");
 
     previousMoveButton.addEventListener("click", () => {
@@ -326,6 +331,9 @@ class ChessBoardPanel {
     });
     flipBoardButton.addEventListener("click", () => {
       this.toggleBoardFlip();
+    });
+    resetBoardButton.addEventListener("click", () => {
+      this.onResetBoardButtonClick();
     });
     submitFENButton.addEventListener("click", () => {
       this.onSubmitFENButtonClick();
